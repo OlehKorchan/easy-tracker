@@ -59,15 +59,16 @@ builder.Services.AddSwaggerGen(options => options.AddSecurityDefinition("Bearer"
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
-builder.Services.AddScoped<ISpendingCategoryRepository, SpendingCategoryRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IMainSpendingCategoryRepository, MainSpendingCategoryRepository>();
+builder.Services.AddTransient<ISalaryRepository, SalaryRepository>();
+builder.Services.AddTransient<ISpendingCategoryRepository, SpendingCategoryRepository>();
+builder.Services.AddTransient<ISpendingRepository, SpendingRepository>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IMainSpendingCategoryRepository, MainSpendingCategoryRepository>();
 
-builder.Services.AddScoped<ISalaryService, SalaryService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ISpendingCategoryService, SpendingCategoryService>();
-builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
+builder.Services.AddTransient<ISalaryService, SalaryService>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<ISpendingCategoryService, SpendingCategoryService>();
+builder.Services.AddTransient<IJwtGenerator, JwtGenerator>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<EasyTrackerDbContext>(options =>

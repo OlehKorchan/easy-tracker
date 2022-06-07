@@ -6,6 +6,6 @@ namespace EasyTracker.DAL.Interfaces
 	{
 		Task<Spending> GetAsync(Guid id);
 		Task AddAsync(Spending spending);
-		Task DeleteAsync(Spending spending);
+		void Delete(Spending spending);
 	}
 }

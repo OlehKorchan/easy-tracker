@@ -8,33 +8,28 @@ namespace EasyTracker.BLL.Services
 {
 	public class SpendingCategoryService : ISpendingCategoryService
 	{
-		private readonly ISpendingCategoryRepository _repository;
-		private readonly IMainSpendingCategoryRepository _mainCategoriesRepo;
-		private readonly UserManager<User> _userManager;
+		private readonly IUnitOfWork _unitOfWork;
 
 		public SpendingCategoryService(
-			ISpendingCategoryRepository repository,
-			UserManager<User> userManager,
-			IMainSpendingCategoryRepository mainCategoriesRepo)
+			IUnitOfWork unitOfWork)
 		{
-			_repository = repository;
-			_userManager = userManager;
-			_mainCategoriesRepo = mainCategoriesRepo;
+			_unitOfWork = unitOfWork;
 		}
 
 		public Task<List<MainSpendingCategory>> GetAllMainAsync()
 		{
-			return _mainCategoriesRepo.GetAllAsync();
+			return _unitOfWork.MainSpendingCategoryRepository.GetAllAsync();
 		}
 
 		public Task<MainSpendingCategory> GetMainAsync(Guid categoryId)
 		{
-			return _mainCategoriesRepo.GetAsync(categoryId);
+			return _unitOfWork.MainSpendingCategoryRepository.GetAsync(categoryId);
 		}
 
 		public async Task<SpendingCategoryGetDTO> GetAsync(Guid categoryId)
 		{
-			var spendingCategory = await _repository.GetAsync(categoryId);
+			var spendingCategory = await _unitOfWork
+				.SpendingCategoryRepository.GetAsync(categoryId);
 
 			var image = LoadImageFromFileSystem(spendingCategory.ImageSrc);
 
@@ -49,7 +44,8 @@ namespace EasyTracker.BLL.Services
 
 		public async Task<List<SpendingCategoryGetDTO>> GetAllAsync()
 		{
-			var spendingCategories = await _repository.GetAllAsync();
+			var spendingCategories = await _unitOfWork
+				.SpendingCategoryRepository.GetAllAsync();
 
 			return spendingCategories
 				.Select(spendingCategory => new SpendingCategoryGetDTO
@@ -64,7 +60,8 @@ namespace EasyTracker.BLL.Services
 
 		public async Task CreateAsync(SpendingCategoryPostDTO spendingCategory)
 		{
-			var currentUserId = (await _userManager.FindByNameAsync(spendingCategory.UserName)).Id;
+			var currentUserId = (await _unitOfWork
+				.UserRepository.GetByNameAsync(spendingCategory.UserName)).Id;
 
 			var categoryToCreate = new SpendingCategory
 			{
@@ -74,21 +71,34 @@ namespace EasyTracker.BLL.Services
 				UserId = currentUserId
 			};
 
-			await _repository.AddAsync(categoryToCreate);
+			await _unitOfWork.SpendingCategoryRepository.AddAsync(categoryToCreate);
+
+			_unitOfWork.SaveAsync().GetAwaiter();
+		}
+
+		public async Task CreateManyAsync(IEnumerable<SpendingCategory> spendingCategory)
+		{
+			await _unitOfWork.SpendingCategoryRepository.AddManyAsync(spendingCategory);
+			_unitOfWork.SaveAsync().GetAwaiter();
 		}
 
 		public async Task DeleteAsync(SpendingCategoryPostDTO spendingCategory)
 		{
-			var currentUser = await _userManager.FindByNameAsync(spendingCategory.UserName);
+			var currentUser = await _unitOfWork
+				.UserRepository.GetByNameAsync(spendingCategory.UserName);
 
-			var spendingCategoryToDelete = await _repository.GetAsync(spendingCategory.Id);
+			var spendingCategoryToDelete = await _unitOfWork
+				.SpendingCategoryRepository.GetAsync(spendingCategory.Id);
 
-			if (!string.Equals(currentUser.Id, spendingCategoryToDelete.UserId, StringComparison.InvariantCultureIgnoreCase))
+			if (!string.Equals(
+				    currentUser.Id, spendingCategoryToDelete.UserId,
+				    StringComparison.InvariantCultureIgnoreCase))
 			{
 				throw new InvalidOperationException();
 			}
 
-			await _repository.DeleteAsync(spendingCategoryToDelete);
+			_unitOfWork.SpendingCategoryRepository.Delete(spendingCategoryToDelete);
+			_unitOfWork.SaveAsync().GetAwaiter();
 		}
 
 		private static byte[] LoadImageFromFileSystem(string imagePath)

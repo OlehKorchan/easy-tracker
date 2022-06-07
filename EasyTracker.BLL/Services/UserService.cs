@@ -1,5 +1,7 @@
-﻿using EasyTracker.BLL.DTO;
+﻿using AutoMapper;
+using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
+using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -7,16 +9,23 @@ namespace EasyTracker.BLL.Services
 {
 	public class UserService : IUserService
 	{
-		private readonly UserManager<User> _userManager;
+		private readonly ISpendingCategoryService _spendingCategoryService;
+		private readonly IMapper _mapper;
+		private readonly IUnitOfWork _unitOfWork;
 
-		public UserService(UserManager<User> userManager)
+		public UserService(
+			ISpendingCategoryService spendingCategoryService,
+			IMapper mapper,
+			IUnitOfWork unitOfWork)
 		{
-			_userManager = userManager;
+			_spendingCategoryService = spendingCategoryService;
+			_mapper = mapper;
+			_unitOfWork = unitOfWork;
 		}
 
 		public async Task<UserDTO> GetUserAsync(string userName)
 		{
-			var currentUser = await _userManager.FindByNameAsync(userName);
+			var currentUser = await _unitOfWork.UserRepository.GetByNameAsync(userName);
 
 			return new UserDTO
 			{
@@ -27,10 +36,30 @@ namespace EasyTracker.BLL.Services
 
 		public async Task AddAmountAsync(decimal amount, string userName)
 		{
-			var user = await _userManager.FindByNameAsync(userName);
-			user.Amount += amount;
+			var currentUser = await _unitOfWork.UserRepository.GetByNameAsync(userName);
+			currentUser.Amount += amount;
 
-			await _userManager.UpdateAsync(user);
+			_unitOfWork.UserRepository.Update(currentUser);
+		}
+
+		public async Task AddMainCategoriesAsync(string userName)
+		{
+			var mainCategories = await _spendingCategoryService
+				.GetAllMainAsync();
+
+			var currentUser = await _unitOfWork.UserRepository.GetByNameAsync(userName);
+
+			var userBaseCategories = mainCategories
+				.Select(c =>
+				{
+					var newCategory = _mapper.Map<SpendingCategory>(c);
+					newCategory.UserId = currentUser.Id;
+					return newCategory;
+				});
+
+			await _spendingCategoryService.CreateManyAsync(userBaseCategories);
+
+			_unitOfWork.UserRepository.Update(currentUser);
 		}
 	}
 }

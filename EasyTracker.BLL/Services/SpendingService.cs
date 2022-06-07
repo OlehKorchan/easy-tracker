@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Formats.Asn1;
+using AutoMapper;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
@@ -8,28 +9,32 @@ namespace EasyTracker.BLL.Services
 {
 	public class SpendingService : ISpendingService
 	{
-		private readonly ISpendingRepository _spendingRepository;
+		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
-		public SpendingService(ISpendingRepository spendingRepository, IMapper mapper)
+		public SpendingService(IUnitOfWork unitOfWork, IMapper mapper)
 		{
-			_spendingRepository = spendingRepository;
+			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 		}
 
 		public async Task AddAsync(SpendingDTO spendingDto)
 		{
-			await _spendingRepository.AddAsync(_mapper.Map<Spending>(spendingDto));
+			await _unitOfWork
+				.SpendingRepository.AddAsync(_mapper.Map<Spending>(spendingDto));
+			_unitOfWork.SaveAsync().GetAwaiter();
 		}
 
-		public async Task DeleteAsync(SpendingDTO spendingDto)
+		public Task DeleteAsync(SpendingDTO spendingDto)
 		{
-			await _spendingRepository.DeleteAsync(_mapper.Map<Spending>(spendingDto));
+			_unitOfWork.SpendingRepository.Delete(_mapper.Map<Spending>(spendingDto));
+
+			return _unitOfWork.SaveAsync();
 		}
 
 		public async Task<SpendingDTO> GetAsync(Guid id)
 		{
-			return _mapper.Map<SpendingDTO>(await _spendingRepository.GetAsync(id));
+			return _mapper.Map<SpendingDTO>(await _unitOfWork.SpendingRepository.GetAsync(id));
 		}
 	}
 }

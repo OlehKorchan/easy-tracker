@@ -6,6 +6,7 @@
 		public ISpendingCategoryRepository SpendingCategoryRepository { get; }
 		public IMainSpendingCategoryRepository MainSpendingCategoryRepository { get; }
 		public ISpendingRepository SpendingRepository { get; }
+		public IUserRepository UserRepository { get; }
 
 		Task SaveAsync();
 	}

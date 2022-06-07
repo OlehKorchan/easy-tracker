@@ -3,7 +3,6 @@ using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace EasyTracker.BLL.Services
 {
@@ -11,21 +10,20 @@ namespace EasyTracker.BLL.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
-		private readonly UserManager<User> _userManager;
 		private readonly IUserService _userService;
 
 		public SalaryService(
-			IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, IUserService userService)
+			IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
-			_userManager = userManager;
 			_userService = userService;
 		}
 
 		public async Task AddAsync(SalaryDTO salaryDto)
 		{
-			var userId = (await _userManager.FindByNameAsync(salaryDto.UserName)).Id;
+			var userId = (await _unitOfWork
+				.UserRepository.GetByNameAsync(salaryDto.UserName)).Id;
 
 			var salary = new Salary
 			{
@@ -48,7 +46,7 @@ namespace EasyTracker.BLL.Services
 			var salaryToDelete = await _unitOfWork
 				.SalaryRepository.GetAsync(salary.Id);
 
-			var user = await _userManager.FindByNameAsync(salary.UserName);
+			var user = await _unitOfWork.UserRepository.GetByNameAsync(salary.UserName);
 
 			if (!string.Equals(user.Id, salaryToDelete.UserId, StringComparison.InvariantCultureIgnoreCase))
 			{
@@ -57,7 +55,7 @@ namespace EasyTracker.BLL.Services
 
 			_unitOfWork.SalaryRepository.Delete(salaryToDelete);
 			user.Amount -= salaryToDelete.Amount;
-			await _userManager.UpdateAsync(user);
+			_unitOfWork.UserRepository.Update(user);
 
 			_unitOfWork.SaveAsync().GetAwaiter();
 		}
@@ -72,7 +70,7 @@ namespace EasyTracker.BLL.Services
 
 		public async Task<List<SalaryDTO>> GetAllUserSalariesAsync(string userName)
 		{
-			var userId = (await _userManager.FindByNameAsync(userName)).Id;
+			var userId = (await _unitOfWork.UserRepository.GetByNameAsync(userName)).Id;
 
 			var salaries = await _unitOfWork
 				.SalaryRepository.GetAllAsync(userId);

@@ -6,5 +6,6 @@ namespace EasyTracker.BLL.Interfaces
 	{
 		Task<UserDTO> GetUserAsync(string userName);
 		Task AddAmountAsync(decimal amount, string userName);
+		Task AddMainCategoriesAsync(string userName);
 	}
 }

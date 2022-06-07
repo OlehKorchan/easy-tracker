@@ -21,16 +21,14 @@ namespace EasyTracker.DAL.Repositories
 				.FirstOrDefaultAsync(sp => sp.Id == id);
 		}
 
-		public async Task AddAsync(Spending spending)
+		public Task AddAsync(Spending spending)
 		{
-			await _db.Spendings.AddAsync(spending);
-			await _db.SaveChangesAsync();
+			return _db.Spendings.AddAsync(spending).AsTask();
 		}
 
-		public async Task DeleteAsync(Spending spending)
+		public void Delete(Spending spending)
 		{
 			_db.Spendings.Remove(spending);
-			await _db.SaveChangesAsync();
 		}
 	}
 }

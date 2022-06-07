@@ -14,30 +14,33 @@ namespace EasyTracker.DAL.Repositories
 			_context = context;
 		}
 
-		public async Task<SpendingCategory> GetAsync(Guid categoryId)
+		public Task<SpendingCategory> GetAsync(Guid categoryId)
 		{
-			return await _context.SpendingCategories
+			return _context.SpendingCategories
 				.AsNoTracking()
 				.FirstOrDefaultAsync(sc => sc.Id == categoryId);
 		}
 
-		public async Task<List<SpendingCategory>> GetAllAsync()
+		public Task<List<SpendingCategory>> GetAllAsync()
 		{
-			return await _context.SpendingCategories
+			return _context.SpendingCategories
 				.AsNoTracking()
 				.ToListAsync();
 		}
 
-		public async Task AddAsync(SpendingCategory spendingCategory)
+		public Task AddAsync(SpendingCategory spendingCategory)
 		{
-			await _context.SpendingCategories.AddAsync(spendingCategory);
-			await _context.SaveChangesAsync();
+			return _context.SpendingCategories.AddAsync(spendingCategory).AsTask();
 		}
 
-		public async Task DeleteAsync(SpendingCategory spendingCategory)
+		public Task AddManyAsync(IEnumerable<SpendingCategory> spendingCategories)
+		{
+			return _context.SpendingCategories.AddRangeAsync(spendingCategories);
+		}
+
+		public void Delete(SpendingCategory spendingCategory)
 		{
 			_context.SpendingCategories.Remove(spendingCategory);
-			await _context.SaveChangesAsync();
 		}
 	}
 }

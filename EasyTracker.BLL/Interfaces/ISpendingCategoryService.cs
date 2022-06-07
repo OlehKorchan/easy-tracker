@@ -10,6 +10,7 @@ namespace EasyTracker.BLL.Interfaces
 		Task<SpendingCategoryGetDTO> GetAsync(Guid categoryId);
 		Task<List<SpendingCategoryGetDTO>> GetAllAsync();
 		Task CreateAsync(SpendingCategoryPostDTO spendingCategory);
+		Task CreateManyAsync(IEnumerable<SpendingCategory> spendingCategories);
 		Task DeleteAsync(SpendingCategoryPostDTO spendingCategory);
 	}
 }
