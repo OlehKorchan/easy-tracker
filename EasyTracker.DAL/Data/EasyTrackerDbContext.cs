@@ -22,6 +22,27 @@ namespace EasyTracker.DAL.Data
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			builder
+				.Entity<User>()
+				.HasMany(u => u.SpendingCategories)
+				.WithOne(sc => sc.User)
+				.HasForeignKey(sc => sc.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder
+				.Entity<User>()
+				.HasMany(u => u.Salaries)
+				.WithOne(sc => sc.User)
+				.HasForeignKey(sc => sc.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder
+				.Entity<User>()
+				.HasMany(u => u.Savings)
+				.WithOne(sc => sc.User)
+				.HasForeignKey(sc => sc.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder
 				.Entity<MainSpendingCategory>()
 				.HasData(GetMainSpendingCategories());
 
