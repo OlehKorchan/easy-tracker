@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using EasyTracker.API.Config;
+﻿using EasyTracker.API.Config;
 using EasyTracker.API.Helpers;
 using EasyTracker.API.Models;
 using EasyTracker.BLL.Config;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace EasyTracker.API.Controllers
 {

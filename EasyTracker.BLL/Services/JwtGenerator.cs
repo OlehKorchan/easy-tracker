@@ -1,11 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using EasyTracker.BLL.Config;
+﻿using EasyTracker.BLL.Config;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace EasyTracker.BLL.Services
 {
