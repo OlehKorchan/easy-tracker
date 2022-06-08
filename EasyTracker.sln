@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyTracker.BLL", "EasyTrac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyTracker.API", "EasyTracker.API\EasyTracker.API.csproj", "{3D74E6A2-ECC5-4A97-A40E-920FBFBE5CD1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyTracker.UI", "EasyTracker.UI\EasyTracker.UI.csproj", "{7EBCF847-0C0E-43D2-8A5A-4313712E1320}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{3D74E6A2-ECC5-4A97-A40E-920FBFBE5CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D74E6A2-ECC5-4A97-A40E-920FBFBE5CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D74E6A2-ECC5-4A97-A40E-920FBFBE5CD1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7EBCF847-0C0E-43D2-8A5A-4313712E1320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EBCF847-0C0E-43D2-8A5A-4313712E1320}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EBCF847-0C0E-43D2-8A5A-4313712E1320}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EBCF847-0C0E-43D2-8A5A-4313712E1320}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
