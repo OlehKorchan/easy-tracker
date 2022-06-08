@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTracker.DAL.Migrations
 {
     [DbContext(typeof(EasyTrackerDbContext))]
-    [Migration("20220430153854_UserId fixed to string")]
-    partial class UserIdfixedtostring
+    [Migration("20220608145824_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,93 @@ namespace EasyTracker.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("EasyTracker.DAL.Models.BaseCurrencyRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FromCurrency")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Rate")
+                        .HasColumnType("float");
+
+                    b.Property<double>("ReverseRate")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ToCurrency")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BaseCurrencyRate");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseCurrencyRate");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("379faee5-bde2-4cb6-8405-2e8e92f163bb"),
+                            FromCurrency = 0,
+                            Rate = 0.034000000000000002,
+                            ReverseRate = 29.5,
+                            ToCurrency = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("dd015f02-7bb5-426c-9787-92cdec52abe7"),
+                            FromCurrency = 0,
+                            Rate = 0.032000000000000001,
+                            ReverseRate = 31.59,
+                            ToCurrency = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("d6f50313-3b89-45ae-9a9d-3577ef0230c3"),
+                            FromCurrency = 0,
+                            Rate = 0.027,
+                            ReverseRate = 36.950000000000003,
+                            ToCurrency = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("508b0dec-789b-48dd-b782-3b384bb79fad"),
+                            FromCurrency = 0,
+                            Rate = 0.027,
+                            ReverseRate = 36.950000000000003,
+                            ToCurrency = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("51eb5043-ecde-4857-a27d-89af00265485"),
+                            FromCurrency = 1,
+                            Rate = 0.93000000000000005,
+                            ReverseRate = 1.0700000000000001,
+                            ToCurrency = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("725b5521-ca03-4109-b230-5f17a0ea99dd"),
+                            FromCurrency = 1,
+                            Rate = 0.80000000000000004,
+                            ReverseRate = 1.25,
+                            ToCurrency = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("392cb8c4-a96d-4cd8-bdd5-5c28a928f22b"),
+                            FromCurrency = 2,
+                            Rate = 0.84999999999999998,
+                            ReverseRate = 1.1699999999999999,
+                            ToCurrency = 3
+                        });
+                });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.MainSpendingCategory", b =>
                 {
@@ -41,7 +128,30 @@ namespace EasyTracker.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MainSpendingCategories");
+                    b.ToTable("MainSpendingCategory");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b16af40f-22f0-4670-a438-c9a3ef4a4112"),
+                            CategoryName = "Food",
+                            Description = "",
+                            ImageSrc = "https://i.pinimg.com/564x/fd/80/ec/fd80ecec48eba2a9adb76e4133905879.jpg"
+                        },
+                        new
+                        {
+                            Id = new Guid("89371614-c281-4487-adb6-f913283739d0"),
+                            CategoryName = "Transport",
+                            Description = "",
+                            ImageSrc = "https://images.squarespace-cdn.com/content/v1/5a668f1080bd5e34d18a7e76/1528433925491-J4AL2S34T9O2QNMGPQ0L/Public_Transport_02_2x.png?format=300w"
+                        },
+                        new
+                        {
+                            Id = new Guid("e7462544-ecc5-4a43-8999-1a5280efe341"),
+                            CategoryName = "Health",
+                            Description = "",
+                            ImageSrc = "https://pic.onlinewebfonts.com/svg/img_445017.png"
+                        });
                 });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.Salary", b =>
@@ -66,7 +176,7 @@ namespace EasyTracker.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Salaries");
+                    b.ToTable("Salary");
                 });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.Saving", b =>
@@ -94,7 +204,7 @@ namespace EasyTracker.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Savings");
+                    b.ToTable("Saving");
                 });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.Spending", b =>
@@ -103,25 +213,20 @@ namespace EasyTracker.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("PlannedAmount")
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("SpendAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("SpendingCategoryId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SpendingCategoryId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Spendings");
+                    b.ToTable("Spending");
                 });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.SpendingCategory", b =>
@@ -139,17 +244,17 @@ namespace EasyTracker.DAL.Migrations
                     b.Property<string>("ImageSrc")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<decimal>("PlannedAmount")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("SpendingCategories");
+                    b.ToTable("SpendingCategory");
                 });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.User", b =>
@@ -179,6 +284,9 @@ namespace EasyTracker.DAL.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("MainCurrency")
+                        .HasColumnType("int");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -353,11 +461,24 @@ namespace EasyTracker.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("EasyTracker.DAL.Models.CurrencyRate", b =>
+                {
+                    b.HasBaseType("EasyTracker.DAL.Models.BaseCurrencyRate");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasIndex("UserId");
+
+                    b.HasDiscriminator().HasValue("CurrencyRate");
+                });
+
             modelBuilder.Entity("EasyTracker.DAL.Models.Salary", b =>
                 {
                     b.HasOne("EasyTracker.DAL.Models.User", "User")
                         .WithMany("Salaries")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -366,7 +487,8 @@ namespace EasyTracker.DAL.Migrations
                 {
                     b.HasOne("EasyTracker.DAL.Models.User", "User")
                         .WithMany("Savings")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -374,25 +496,20 @@ namespace EasyTracker.DAL.Migrations
             modelBuilder.Entity("EasyTracker.DAL.Models.Spending", b =>
                 {
                     b.HasOne("EasyTracker.DAL.Models.SpendingCategory", "SpendingCategory")
-                        .WithMany()
+                        .WithMany("Spendings")
                         .HasForeignKey("SpendingCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyTracker.DAL.Models.User", "User")
-                        .WithMany("Spendings")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("SpendingCategory");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EasyTracker.DAL.Models.SpendingCategory", b =>
                 {
                     b.HasOne("EasyTracker.DAL.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
+                        .WithMany("SpendingCategories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -448,13 +565,27 @@ namespace EasyTracker.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EasyTracker.DAL.Models.CurrencyRate", b =>
+                {
+                    b.HasOne("EasyTracker.DAL.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EasyTracker.DAL.Models.SpendingCategory", b =>
+                {
+                    b.Navigation("Spendings");
+                });
+
             modelBuilder.Entity("EasyTracker.DAL.Models.User", b =>
                 {
                     b.Navigation("Salaries");
 
                     b.Navigation("Savings");
 
-                    b.Navigation("Spendings");
+                    b.Navigation("SpendingCategories");
                 });
 #pragma warning restore 612, 618
         }

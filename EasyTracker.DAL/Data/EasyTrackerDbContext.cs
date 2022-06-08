@@ -12,8 +12,9 @@ namespace EasyTracker.DAL.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Salary>();
-            builder.Entity<Saving>();
             builder.Entity<SpendingCategory>();
+            builder.Entity<MainSpendingCategory>().HasData(GetMainSpendingCategories());
+            builder.Entity<Saving>();
             builder.Entity<Spending>();
             builder.Entity<CurrencyRate>();
             builder.Entity<BaseCurrencyRate>().HasData(GetBaseCurrencyRates());
@@ -39,8 +40,6 @@ namespace EasyTracker.DAL.Data
                 .HasForeignKey(sc => sc.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<MainSpendingCategory>().HasData(GetMainSpendingCategories());
-
             base.OnModelCreating(builder);
         }
 
@@ -57,7 +56,7 @@ namespace EasyTracker.DAL.Data
                 },
                 new()
                 {
-                    Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
+                    Id = Guid.Parse("DD015F02-7BB5-426C-9787-92CDEC52ABE7"),
                     FromCurrency = Enums.CurrencyCode.UAH,
                     ToCurrency = Enums.CurrencyCode.EUR,
                     Rate = 0.032,
@@ -65,7 +64,7 @@ namespace EasyTracker.DAL.Data
                 },
                 new()
                 {
-                    Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
+                    Id = Guid.Parse("D6F50313-3B89-45AE-9A9D-3577EF0230C3"),
                     FromCurrency = Enums.CurrencyCode.UAH,
                     ToCurrency = Enums.CurrencyCode.GBP,
                     Rate = 0.027,
@@ -73,7 +72,7 @@ namespace EasyTracker.DAL.Data
                 },
                 new()
                 {
-                    Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
+                    Id = Guid.Parse("508B0DEC-789B-48DD-B782-3B384BB79FAD"),
                     FromCurrency = Enums.CurrencyCode.UAH,
                     ToCurrency = Enums.CurrencyCode.GBP,
                     Rate = 0.027,
@@ -81,7 +80,7 @@ namespace EasyTracker.DAL.Data
                 },
                 new()
                 {
-                    Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
+                    Id = Guid.Parse("51EB5043-ECDE-4857-A27D-89AF00265485"),
                     FromCurrency = Enums.CurrencyCode.USD,
                     ToCurrency = Enums.CurrencyCode.EUR,
                     Rate = 0.93,
@@ -89,7 +88,7 @@ namespace EasyTracker.DAL.Data
                 },
                 new()
                 {
-                    Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
+                    Id = Guid.Parse("725B5521-CA03-4109-B230-5F17A0EA99DD"),
                     FromCurrency = Enums.CurrencyCode.USD,
                     ToCurrency = Enums.CurrencyCode.GBP,
                     Rate = 0.8,
@@ -97,7 +96,7 @@ namespace EasyTracker.DAL.Data
                 },
                 new()
                 {
-                    Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
+                    Id = Guid.Parse("392CB8C4-A96D-4CD8-BDD5-5C28A928F22B"),
                     FromCurrency = Enums.CurrencyCode.EUR,
                     ToCurrency = Enums.CurrencyCode.GBP,
                     Rate = 0.85,

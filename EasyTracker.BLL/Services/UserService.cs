@@ -65,17 +65,19 @@ namespace EasyTracker.BLL.Services
         {
             var userToUpdate = await _unitOfWork.UserRepository.GetByNameAsync(model.UserName);
 
-            if (model.Recalculate) { }
+            if (model.Recalculate)
+            {
+                userToUpdate.Amount = await RecalculateAmountAsync(
+                    userToUpdate.Id,
+                    userToUpdate.Amount,
+                    userToUpdate.MainCurrency,
+                    model.NewMainCurrencyCode
+                );
+            }
 
             userToUpdate.MainCurrency = model.NewMainCurrencyCode;
 
-            userToUpdate.Amount = await RecalculateAmountAsync(
-                userToUpdate.Id,
-                userToUpdate.Amount,
-                userToUpdate.MainCurrency,
-                model.NewMainCurrencyCode
-            );
-
+            _unitOfWork.UserRepository.Update(userToUpdate);
             _unitOfWork.SaveAsync().GetAwaiter().GetResult();
         }
 
@@ -98,6 +100,11 @@ namespace EasyTracker.BLL.Services
                     oldCurrency,
                     newCurrency
                 );
+            }
+
+            if (currencyRate == null)
+            {
+                return amount;
             }
 
             if (oldCurrency == currencyRate.FromCurrency)

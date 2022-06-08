@@ -1,5 +1,3 @@
-using EasyTracker.DAL.Enums;
-
 namespace EasyTracker.DAL.Models
 {
     public class CurrencyRate : BaseCurrencyRate

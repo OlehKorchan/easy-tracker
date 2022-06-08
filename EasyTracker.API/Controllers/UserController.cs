@@ -49,28 +49,30 @@ namespace EasyTracker.API.Controllers
         }
 
         [HttpPut("main-currency")]
-        public async Task<IActionResult> PutMainCurrencyAsync(MainCurrencyRequestModel model)
+        public async Task<IActionResult> PutMainCurrencyAsync(
+            [FromBody] MainCurrencyRequestModel model
+        )
         {
-            var currentUser = await _userService.GetUserAsync(
-                User.FindFirstValue(ClaimTypes.NameIdentifier)
-            );
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var modelDto = _mapper.Map<MainCurrencyRequestDTO>(model);
-            modelDto.UserName = currentUser.UserName;
+            modelDto.UserName = userName;
 
             await _userService.UpdateMainCurrencyAsync(modelDto);
 
             return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("main-currency")]
         public async Task<IActionResult> GetUserMainCurrency()
         {
             var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var userMainCurrencyResponse = await _userService.GetUserMainCurrencyAsync(userName);
 
-            return Ok(new UserMainCurrencyResponse { MainCurrency = userMainCurrencyResponse });
+            return Ok(
+                new UserMainCurrencyResponseModel { MainCurrency = userMainCurrencyResponse }
+            );
         }
     }
 }
