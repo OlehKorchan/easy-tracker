@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using EasyTracker.API.Helpers;
 using EasyTracker.API.Models;
@@ -5,7 +6,6 @@ using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace EasyTracker.API.Controllers
 {
@@ -44,10 +44,7 @@ namespace EasyTracker.API.Controllers
 		}
 
 		[HttpGet("{salaryId}")]
-		public async Task<IActionResult> GetAsync(string salaryId)
-		{
-			return Ok(await _salaryService.GetAsync(Guid.Parse(salaryId)));
-		}
+		public async Task<IActionResult> GetAsync(string salaryId) => Ok(await _salaryService.GetAsync(Guid.Parse(salaryId)));
 
 		[HttpPost]
 		public async Task<IActionResult> PostAsync(SalaryCreateRequestModel salaryCreate)

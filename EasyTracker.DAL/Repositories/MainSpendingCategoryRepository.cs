@@ -9,23 +9,14 @@ namespace EasyTracker.DAL.Repositories
 	{
 		private readonly EasyTrackerDbContext _context;
 
-		public MainSpendingCategoryRepository(EasyTrackerDbContext context)
-		{
-			_context = context;
-		}
+		public MainSpendingCategoryRepository(EasyTrackerDbContext context) => _context = context;
 
-		public async Task<List<MainSpendingCategory>> GetAllAsync()
-		{
-			return await _context.MainSpendingCategories
+		public async Task<List<MainSpendingCategory>> GetAllAsync() => await _context.MainSpendingCategories
 				.AsNoTracking()
 				.ToListAsync();
-		}
 
-		public async Task<MainSpendingCategory> GetAsync(Guid categoryId)
-		{
-			return await _context.MainSpendingCategories
+		public async Task<MainSpendingCategory> GetAsync(Guid categoryId) => await _context.MainSpendingCategories
 				.AsNoTracking()
 				.FirstOrDefaultAsync(msc => msc.Id == categoryId);
-		}
 	}
 }

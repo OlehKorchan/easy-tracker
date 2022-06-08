@@ -1,3 +1,4 @@
+using System.Text;
 using Azure.Identity;
 using EasyTracker.BLL.Config;
 using EasyTracker.BLL.Interfaces;
@@ -12,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.Text;
 
 var builder = WebApplication
 	.CreateBuilder(args);
@@ -29,17 +29,11 @@ if (builder.Environment.IsProduction())
 		new DefaultAzureCredential());
 }
 
-builder.Services.AddCors(options =>
-{
-	options.AddDefaultPolicy(
-		policy =>
-		{
-			policy
+builder.Services.AddCors(options => options.AddDefaultPolicy(
+		policy => policy
 				.AllowAnyOrigin()
 				.AllowAnyHeader()
-				.AllowAnyMethod();
-		});
-});
+				.AllowAnyMethod()));
 
 builder.Services
 	.AddControllers()

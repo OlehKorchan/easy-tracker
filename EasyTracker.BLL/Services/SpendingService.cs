@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
@@ -33,11 +33,8 @@ namespace EasyTracker.BLL.Services
 			return _unitOfWork.SaveAsync();
 		}
 
-		public async Task<SpendingDTO> GetAsync(Guid id)
-		{
-			return _mapper
+		public async Task<SpendingDTO> GetAsync(Guid id) => _mapper
 				.Map<SpendingDTO>(
 					await _unitOfWork.SpendingRepository.GetAsync(id));
-		}
 	}
 }

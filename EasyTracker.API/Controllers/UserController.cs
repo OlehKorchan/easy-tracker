@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+using System.Security.Claims;
+using AutoMapper;
 using EasyTracker.API.Models;
 using EasyTracker.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace EasyTracker.API.Controllers
 {

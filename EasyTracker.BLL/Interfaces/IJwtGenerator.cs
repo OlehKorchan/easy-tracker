@@ -1,4 +1,4 @@
-﻿using EasyTracker.DAL.Models;
+using EasyTracker.DAL.Models;
 
 namespace EasyTracker.BLL.Interfaces
 {

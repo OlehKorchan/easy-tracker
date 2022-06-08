@@ -1,4 +1,4 @@
-﻿using EasyTracker.BLL.Interfaces;
+using EasyTracker.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTracker.API.Controllers
@@ -9,10 +9,7 @@ namespace EasyTracker.API.Controllers
 	{
 		private readonly ISpendingCategoryService _service;
 
-		public MainSpendingCategoriesController(ISpendingCategoryService service)
-		{
-			_service = service;
-		}
+		public MainSpendingCategoriesController(ISpendingCategoryService service) => _service = service;
 
 		[HttpGet("{categoryId}")]
 		public async Task<IActionResult> GetAsync(string categoryId)

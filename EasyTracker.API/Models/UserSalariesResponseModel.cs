@@ -1,4 +1,4 @@
-﻿namespace EasyTracker.API.Models
+namespace EasyTracker.API.Models
 {
 	public class UserSalariesResponseModel : ResponseModelBase
 	{

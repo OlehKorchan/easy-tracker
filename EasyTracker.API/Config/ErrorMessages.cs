@@ -1,4 +1,4 @@
-﻿namespace EasyTracker.API.Config
+namespace EasyTracker.API.Config
 {
 	public static class ErrorMessages
 	{

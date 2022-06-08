@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -37,10 +36,7 @@ namespace EasyTracker.DAL.Migrations
 					CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
 					Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
 				},
-				constraints: table =>
-				{
-					table.PrimaryKey("PK_MainSpendingCategories", x => x.Id);
-				});
+				constraints: table => table.PrimaryKey("PK_MainSpendingCategories", x => x.Id));
 
 			migrationBuilder.CreateIndex(
 				name: "IX_SpendingCategories_UserId1",

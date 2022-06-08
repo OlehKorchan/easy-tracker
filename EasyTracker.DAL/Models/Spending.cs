@@ -1,4 +1,4 @@
-﻿namespace EasyTracker.DAL.Models
+namespace EasyTracker.DAL.Models
 {
 	public class Spending : ModelBase
 	{

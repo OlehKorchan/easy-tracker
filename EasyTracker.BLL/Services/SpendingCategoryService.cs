@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
@@ -19,15 +19,9 @@ namespace EasyTracker.BLL.Services
 			_mapper = mapper;
 		}
 
-		public Task<List<MainSpendingCategory>> GetAllMainAsync()
-		{
-			return _unitOfWork.MainSpendingCategoryRepository.GetAllAsync();
-		}
+		public Task<List<MainSpendingCategory>> GetAllMainAsync() => _unitOfWork.MainSpendingCategoryRepository.GetAllAsync();
 
-		public Task<MainSpendingCategory> GetMainAsync(Guid categoryId)
-		{
-			return _unitOfWork.MainSpendingCategoryRepository.GetAsync(categoryId);
-		}
+		public Task<MainSpendingCategory> GetMainAsync(Guid categoryId) => _unitOfWork.MainSpendingCategoryRepository.GetAsync(categoryId);
 
 		public async Task<SpendingCategoryGetDTO> GetAsync(Guid categoryId)
 		{
@@ -84,9 +78,9 @@ namespace EasyTracker.BLL.Services
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
-		public async Task CreateManyAsync(IEnumerable<SpendingCategory> spendingCategory)
+		public async Task CreateManyAsync(IEnumerable<SpendingCategory> spendingCategories)
 		{
-			await _unitOfWork.SpendingCategoryRepository.AddManyAsync(spendingCategory);
+			await _unitOfWork.SpendingCategoryRepository.AddManyAsync(spendingCategories);
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
@@ -100,7 +94,7 @@ namespace EasyTracker.BLL.Services
 
 			if (!string.Equals(
 					currentUser.Id, spendingCategoryToDelete.UserId,
-					StringComparison.InvariantCultureIgnoreCase))
+					StringComparison.OrdinalIgnoreCase))
 			{
 				throw new InvalidOperationException();
 			}
@@ -109,9 +103,6 @@ namespace EasyTracker.BLL.Services
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
-		private static void AddCategorySpendAmount(SpendingCategoryGetDTO category)
-		{
-			category.SpendAmount = category.Spendings.Sum(sp => sp.Amount);
-		}
+		private static void AddCategorySpendAmount(SpendingCategoryGetDTO category) => category.SpendAmount = category.Spendings.Sum(sp => sp.Amount);
 	}
 }

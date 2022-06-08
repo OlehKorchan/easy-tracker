@@ -1,4 +1,4 @@
-﻿using EasyTracker.DAL.Models;
+using EasyTracker.DAL.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,9 +49,7 @@ namespace EasyTracker.DAL.Data
 			base.OnModelCreating(builder);
 		}
 
-		private static IEnumerable<MainSpendingCategory> GetMainSpendingCategories()
-		{
-			return new List<MainSpendingCategory>
+		private static IEnumerable<MainSpendingCategory> GetMainSpendingCategories() => new List<MainSpendingCategory>
 			{
 				new()
 				{
@@ -75,6 +73,5 @@ namespace EasyTracker.DAL.Data
 					ImageSrc = "https://pic.onlinewebfonts.com/svg/img_445017.png"
 				}
 			};
-		}
 	}
 }

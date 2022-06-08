@@ -1,4 +1,5 @@
-﻿using EasyTracker.API.Config;
+﻿using System.Text.Json;
+using EasyTracker.API.Config;
 using EasyTracker.API.Helpers;
 using EasyTracker.API.Models;
 using EasyTracker.BLL.Config;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 
 namespace EasyTracker.API.Controllers
 {
@@ -16,7 +16,7 @@ namespace EasyTracker.API.Controllers
 	[ApiController]
 	public class AccountController : ControllerBase
 	{
-		private readonly IJwtGenerator _jwtGenerator;
+		private readonly IJwtGenerator jwtGenerator;
 		private readonly UserManager<User> _userManager;
 		private readonly SignInManager<User> _signInManager;
 		private readonly ILogger<AccountController> _logger;
@@ -33,7 +33,7 @@ namespace EasyTracker.API.Controllers
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
-			_jwtGenerator = jwtGenerator;
+			this.jwtGenerator = jwtGenerator;
 			_logger = logger;
 			_userService = userService;
 			_jwtSettings = jwtSettings.Value;
@@ -63,7 +63,7 @@ namespace EasyTracker.API.Controllers
 					await _signInManager.SignInAsync(user, false);
 
 					responseModel.Username = user.UserName;
-					responseModel.Token = _jwtGenerator.GenerateToken(
+					responseModel.Token = jwtGenerator.GenerateToken(
 						await _userManager.FindByNameAsync(registerModel.UserName));
 					responseModel.ExpiresIn = _jwtSettings.ExpiresInHours;
 				}
@@ -108,7 +108,7 @@ namespace EasyTracker.API.Controllers
 				if (loginResult.Succeeded)
 				{
 					responseModel.Username = loginModel.Login;
-					responseModel.Token = _jwtGenerator.GenerateToken(
+					responseModel.Token = jwtGenerator.GenerateToken(
 						await _userManager.FindByNameAsync(loginModel.Login));
 					responseModel.ExpiresIn = _jwtSettings.ExpiresInHours;
 					_logger.LogInformation(

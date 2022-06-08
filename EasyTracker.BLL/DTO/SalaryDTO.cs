@@ -1,4 +1,4 @@
-﻿namespace EasyTracker.BLL.DTO
+namespace EasyTracker.BLL.DTO
 {
 	public class SalaryDTO
 	{

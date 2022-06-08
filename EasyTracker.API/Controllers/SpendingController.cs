@@ -1,4 +1,4 @@
-﻿using EasyTracker.BLL.DTO;
+using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +10,7 @@ namespace EasyTracker.API.Controllers
 	{
 		private readonly ISpendingService _spendingService;
 
-		public SpendingController(ISpendingService spendingService)
-		{
-			_spendingService = spendingService;
-		}
+		public SpendingController(ISpendingService spendingService) => _spendingService = spendingService;
 
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetAsync(string id)

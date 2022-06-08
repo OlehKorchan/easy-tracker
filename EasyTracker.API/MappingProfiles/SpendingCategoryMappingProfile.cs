@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EasyTracker.API.Models;
 using EasyTracker.BLL.DTO;
 using EasyTracker.DAL.Models;

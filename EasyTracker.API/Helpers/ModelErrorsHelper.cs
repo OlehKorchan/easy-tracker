@@ -1,4 +1,4 @@
-﻿using EasyTracker.API.Models;
+using EasyTracker.API.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace EasyTracker.API.Helpers

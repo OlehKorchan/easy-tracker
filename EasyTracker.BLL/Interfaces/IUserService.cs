@@ -1,4 +1,4 @@
-﻿using EasyTracker.BLL.DTO;
+using EasyTracker.BLL.DTO;
 
 namespace EasyTracker.BLL.Interfaces
 {

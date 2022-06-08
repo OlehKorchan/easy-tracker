@@ -1,4 +1,4 @@
-﻿namespace EasyTracker.DAL.Interfaces
+namespace EasyTracker.DAL.Interfaces
 {
 	public interface IUnitOfWork
 	{
