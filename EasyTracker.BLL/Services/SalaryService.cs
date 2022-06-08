@@ -8,77 +8,88 @@ namespace EasyTracker.BLL.Services
 {
 	public class SalaryService : ISalaryService
 	{
-		private readonly IUnitOfWork unitOfWork;
-		private readonly IMapper mapper;
-		private readonly IUserService userService;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IMapper _mapper;
+		private readonly IUserService _userService;
 
 		public SalaryService(
-			IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
+			IUnitOfWork unitOfWork,
+			IMapper mapper,
+			IUserService userService)
 		{
-			this.unitOfWork = unitOfWork;
-			this.mapper = mapper;
-			this.userService = userService;
+			_unitOfWork = unitOfWork;
+			_mapper = mapper;
+			_userService = userService;
 		}
 
-		public async Task AddAsync(SalaryDTO salary)
+		public async Task AddAsync(SalaryDTO salaryDto)
 		{
-			var userId = (await unitOfWork
-				.UserRepository.GetByNameAsync(salary.UserName)).Id;
+			var userId = (await _unitOfWork
+				.UserRepository.GetByNameAsync(salaryDto.UserName)).Id;
 
 			var salary = new Salary
 			{
-				Amount = salary.Amount,
-				Comment = salary.Comment,
+				Amount = salaryDto.Amount,
+				Comment = salaryDto.Comment,
 				UserId = userId,
 				DateAdded = DateTime.UtcNow
 			};
 
-			await unitOfWork.SalaryRepository.AddAsync(salary);
+			await _unitOfWork.SalaryRepository.AddAsync(salary);
 
-			await userService.AddAmountAsync(salary.Amount, salary.UserName);
+			await _userService
+				.AddAmountAsync(
+					salary.Amount, salaryDto.UserName);
 
-			unitOfWork.SaveAsync().GetAwaiter().GetResult();
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task DeleteAsync(SalaryDTO salary)
 		{
-			var salaryToDelete = await unitOfWork
+			var salaryToDelete = await _unitOfWork
 				.SalaryRepository.GetAsync(salary.Id);
 
-			var user = await unitOfWork.UserRepository.GetByNameAsync(salary.UserName);
+			var user = await _unitOfWork
+				.UserRepository.GetByNameAsync(salary.UserName);
 
-			if (!string.Equals(user.Id, salaryToDelete.UserId, StringComparison.OrdinalIgnoreCase))
+			if (!string.Equals(
+				user.Id, salaryToDelete.UserId,
+				StringComparison.OrdinalIgnoreCase))
 			{
 				throw new InvalidOperationException();
 			}
 
-			await unitOfWork.SalaryRepository.DeleteAsync(salaryToDelete.Id);
+			await _unitOfWork.SalaryRepository
+				.DeleteAsync(salaryToDelete.Id);
+
 			user.Amount -= salaryToDelete.Amount;
 			if (user.Amount < 0)
 			{
 				user.Amount = 0;
 			}
-			unitOfWork.UserRepository.Update(user);
+			_unitOfWork.UserRepository.Update(user);
 
-			unitOfWork.SaveAsync().GetAwaiter().GetResult();
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task<SalaryDTO> GetAsync(Guid salaryId)
 		{
-			var salary = await unitOfWork
+			var salary = await _unitOfWork
 				.SalaryRepository.GetAsync(salaryId);
 
-			return mapper.Map<Salary, SalaryDTO>(salary);
+			return _mapper.Map<Salary, SalaryDTO>(salary);
 		}
 
-		public async Task<List<SalaryDTO>> GetAllUserSalariesAsync(string userName)
+		public async Task<List<SalaryDTO>> GetAllUserSalariesAsync(
+			string userName)
 		{
-			var userId = (await unitOfWork.UserRepository.GetByNameAsync(userName)).Id;
+			var userId = (await _unitOfWork.UserRepository
+				.GetByNameAsync(userName)).Id;
 
-			var salaries = await unitOfWork
+			var salaries = await _unitOfWork
 				.SalaryRepository.GetAllAsync(userId);
 
-			return mapper.Map<List<Salary>, List<SalaryDTO>>(salaries);
+			return _mapper.Map<List<Salary>, List<SalaryDTO>>(salaries);
 		}
 	}
 }

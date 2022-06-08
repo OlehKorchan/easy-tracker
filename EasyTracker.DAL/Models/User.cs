@@ -1,3 +1,4 @@
+using EasyTracker.DAL.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace EasyTracker.DAL.Models
@@ -9,6 +10,8 @@ namespace EasyTracker.DAL.Models
 		public List<Salary> Salaries { get; set; }
 
 		public List<Saving> Savings { get; set; }
+
+		public CurrencyCode MainCurrency { get; set; } = CurrencyCode.USD;
 
 		public List<SpendingCategory> SpendingCategories { get; set; }
 	}

@@ -16,7 +16,7 @@ namespace EasyTracker.API.Controllers
 	[ApiController]
 	public class AccountController : ControllerBase
 	{
-		private readonly IJwtGenerator jwtGenerator;
+		private readonly IJwtGenerator _jwtGenerator;
 		private readonly UserManager<User> _userManager;
 		private readonly SignInManager<User> _signInManager;
 		private readonly ILogger<AccountController> _logger;
@@ -33,7 +33,7 @@ namespace EasyTracker.API.Controllers
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
-			this.jwtGenerator = jwtGenerator;
+			this._jwtGenerator = jwtGenerator;
 			_logger = logger;
 			_userService = userService;
 			_jwtSettings = jwtSettings.Value;
@@ -63,7 +63,7 @@ namespace EasyTracker.API.Controllers
 					await _signInManager.SignInAsync(user, false);
 
 					responseModel.Username = user.UserName;
-					responseModel.Token = jwtGenerator.GenerateToken(
+					responseModel.Token = _jwtGenerator.GenerateToken(
 						await _userManager.FindByNameAsync(registerModel.UserName));
 					responseModel.ExpiresIn = _jwtSettings.ExpiresInHours;
 				}
@@ -108,7 +108,7 @@ namespace EasyTracker.API.Controllers
 				if (loginResult.Succeeded)
 				{
 					responseModel.Username = loginModel.Login;
-					responseModel.Token = jwtGenerator.GenerateToken(
+					responseModel.Token = _jwtGenerator.GenerateToken(
 						await _userManager.FindByNameAsync(loginModel.Login));
 					responseModel.ExpiresIn = _jwtSettings.ExpiresInHours;
 					_logger.LogInformation(
