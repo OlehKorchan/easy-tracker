@@ -1,19 +1,22 @@
-﻿using EasyTracker.BLL.DTO;
+﻿using AutoMapper;
+using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace EasyTracker.BLL.Services
 {
 	public class SpendingCategoryService : ISpendingCategoryService
 	{
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly IMapper _mapper;
 
 		public SpendingCategoryService(
-			IUnitOfWork unitOfWork)
+			IUnitOfWork unitOfWork,
+			IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
+			_mapper = mapper;
 		}
 
 		public Task<List<MainSpendingCategory>> GetAllMainAsync()
@@ -31,15 +34,15 @@ namespace EasyTracker.BLL.Services
 			var spendingCategory = await _unitOfWork
 				.SpendingCategoryRepository.GetAsync(categoryId);
 
-			var image = LoadImageFromFileSystem(spendingCategory.ImageSrc);
+			var categoryDto = _mapper
+				.Map<SpendingCategoryGetDTO>(spendingCategory);
 
-			return new SpendingCategoryGetDTO
-			{
-				Id = spendingCategory.Id,
-				CategoryName = spendingCategory.CategoryName,
-				Description = spendingCategory.Description,
-				Image = image
-			};
+			categoryDto.Spendings = _mapper
+				.Map<List<SpendingDTO>>(spendingCategory.Spendings);
+
+			AddCategorySpendAmount(categoryDto);
+
+			return categoryDto;
 		}
 
 		public async Task<List<SpendingCategoryGetDTO>> GetAllAsync()
@@ -48,13 +51,18 @@ namespace EasyTracker.BLL.Services
 				.SpendingCategoryRepository.GetAllAsync();
 
 			return spendingCategories
-				.Select(spendingCategory => new SpendingCategoryGetDTO
-				{
-					CategoryName = spendingCategory.CategoryName,
-					Description = spendingCategory.Description,
-					Id = spendingCategory.Id,
-					ImageSrc = spendingCategory.ImageSrc
-				})
+				.Select(spendingCategory =>
+					{
+						var categoryDto = _mapper
+							.Map<SpendingCategoryGetDTO>(spendingCategory);
+
+						categoryDto.Spendings = _mapper
+							.Map<List<SpendingDTO>>(spendingCategory.Spendings);
+
+						AddCategorySpendAmount(categoryDto);
+
+						return categoryDto;
+					})
 				.ToList();
 		}
 
@@ -73,13 +81,13 @@ namespace EasyTracker.BLL.Services
 
 			await _unitOfWork.SpendingCategoryRepository.AddAsync(categoryToCreate);
 
-			_unitOfWork.SaveAsync().GetAwaiter();
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task CreateManyAsync(IEnumerable<SpendingCategory> spendingCategory)
 		{
 			await _unitOfWork.SpendingCategoryRepository.AddManyAsync(spendingCategory);
-			_unitOfWork.SaveAsync().GetAwaiter();
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task DeleteAsync(SpendingCategoryPostDTO spendingCategory)
@@ -91,20 +99,19 @@ namespace EasyTracker.BLL.Services
 				.SpendingCategoryRepository.GetAsync(spendingCategory.Id);
 
 			if (!string.Equals(
-				    currentUser.Id, spendingCategoryToDelete.UserId,
-				    StringComparison.InvariantCultureIgnoreCase))
+					currentUser.Id, spendingCategoryToDelete.UserId,
+					StringComparison.InvariantCultureIgnoreCase))
 			{
 				throw new InvalidOperationException();
 			}
 
-			_unitOfWork.SpendingCategoryRepository.Delete(spendingCategoryToDelete);
-			_unitOfWork.SaveAsync().GetAwaiter();
+			await _unitOfWork.SpendingCategoryRepository.DeleteAsync(spendingCategoryToDelete.Id);
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
-		private static byte[] LoadImageFromFileSystem(string imagePath)
+		private static void AddCategorySpendAmount(SpendingCategoryGetDTO category)
 		{
-			//TODO implement image loading logic
-			return new byte[]{0};
+			category.SpendAmount = category.Spendings.Sum(sp => sp.Amount);
 		}
 	}
 }

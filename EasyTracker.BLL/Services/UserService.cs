@@ -3,7 +3,6 @@ using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace EasyTracker.BLL.Services
 {
@@ -40,6 +39,7 @@ namespace EasyTracker.BLL.Services
 			currentUser.Amount += amount;
 
 			_unitOfWork.UserRepository.Update(currentUser);
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task AddMainCategoriesAsync(string userName)
@@ -60,6 +60,7 @@ namespace EasyTracker.BLL.Services
 			await _spendingCategoryService.CreateManyAsync(userBaseCategories);
 
 			_unitOfWork.UserRepository.Update(currentUser);
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 	}
 }

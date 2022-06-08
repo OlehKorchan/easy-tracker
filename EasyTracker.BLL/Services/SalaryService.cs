@@ -38,7 +38,7 @@ namespace EasyTracker.BLL.Services
 			await _userService
 				.AddAmountAsync(salary.Amount, salaryDto.UserName);
 
-			_unitOfWork.SaveAsync().GetAwaiter();
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task DeleteAsync(SalaryDTO salary)
@@ -53,11 +53,15 @@ namespace EasyTracker.BLL.Services
 				throw new InvalidOperationException();
 			}
 
-			_unitOfWork.SalaryRepository.Delete(salaryToDelete);
+			await _unitOfWork.SalaryRepository.DeleteAsync(salaryToDelete.Id);
 			user.Amount -= salaryToDelete.Amount;
+			if (user.Amount < 0)
+			{
+				user.Amount = 0;
+			}
 			_unitOfWork.UserRepository.Update(user);
 
-			_unitOfWork.SaveAsync().GetAwaiter();
+			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 
 		public async Task<SalaryDTO> GetAsync(Guid salaryId)

@@ -19,9 +19,10 @@ namespace EasyTracker.DAL.Repositories
 			return _db.Salaries.AddAsync(salary).AsTask();
 		}
 
-		public void Delete(Salary salary)
+		public async Task DeleteAsync(Guid id)
 		{
-			_db.Salaries.Remove(salary);
+			var salaryToDelete = await _db.Salaries.FirstAsync(s => s.Id == id);
+			_db.Salaries.Remove(salaryToDelete);
 		}
 
 		public Task<Salary> GetAsync(Guid salaryId)

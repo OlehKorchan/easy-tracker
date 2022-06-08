@@ -2,9 +2,9 @@
 {
 	public class Spending : ModelBase
 	{
-		public decimal PlannedAmount { get; set; }
+		public decimal Amount { get; set; }
 
-		public decimal SpendAmount { get; set; }
+		public string Comment { get; set; }
 
 		public Guid SpendingCategoryId { get; set; }
 

@@ -17,6 +17,7 @@ namespace EasyTracker.DAL.Repositories
 		public Task<SpendingCategory> GetAsync(Guid categoryId)
 		{
 			return _context.SpendingCategories
+				.Include(c => c.Spendings)
 				.AsNoTracking()
 				.FirstOrDefaultAsync(sc => sc.Id == categoryId);
 		}
@@ -24,6 +25,7 @@ namespace EasyTracker.DAL.Repositories
 		public Task<List<SpendingCategory>> GetAllAsync()
 		{
 			return _context.SpendingCategories
+				.Include(c => c.Spendings)
 				.AsNoTracking()
 				.ToListAsync();
 		}
@@ -38,9 +40,13 @@ namespace EasyTracker.DAL.Repositories
 			return _context.SpendingCategories.AddRangeAsync(spendingCategories);
 		}
 
-		public void Delete(SpendingCategory spendingCategory)
+		public async Task DeleteAsync(Guid id)
 		{
-			_context.SpendingCategories.Remove(spendingCategory);
+			var categoryToDelete = await _context
+				.SpendingCategories
+				.FirstAsync(c => c.Id == id);
+
+			_context.SpendingCategories.Remove(categoryToDelete);
 		}
 	}
 }

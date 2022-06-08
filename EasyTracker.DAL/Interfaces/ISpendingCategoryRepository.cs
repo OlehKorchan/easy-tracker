@@ -8,6 +8,6 @@ namespace EasyTracker.DAL.Interfaces
 		Task<List<SpendingCategory>> GetAllAsync();
 		Task AddAsync(SpendingCategory spendingCategory);
 		Task AddManyAsync(IEnumerable<SpendingCategory> spendingCategories);
-		void Delete(SpendingCategory spendingCategory);
+		Task DeleteAsync(Guid id);
 	}
 }

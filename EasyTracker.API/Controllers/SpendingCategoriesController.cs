@@ -7,61 +7,62 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTracker.API.Controllers
 {
-	[Route("spending-categories")]
-	[ApiController]
-	public class SpendingCategoriesController : ControllerBase
-	{
-		private readonly ISpendingCategoryService _spendingCategoryService;
-		private readonly IMapper _mapper;
+    [Route("spending-categories")]
+    [ApiController]
+    public class SpendingCategoriesController : ControllerBase
+    {
+        private readonly ISpendingCategoryService _spendingCategoryService;
+        private readonly IMapper _mapper;
 
-		public SpendingCategoriesController(
-			ISpendingCategoryService spendingCategoryService, IMapper mapper)
-		{
-			_spendingCategoryService = spendingCategoryService;
-			_mapper = mapper;
-		}
+        public SpendingCategoriesController(
+            ISpendingCategoryService spendingCategoryService, IMapper mapper)
+        {
+            _spendingCategoryService = spendingCategoryService;
+            _mapper = mapper;
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> GetAsync()
-		{
-			var spendingCategoryDtos =
-				await _spendingCategoryService.GetAllAsync();
+        [HttpGet]
+        public async Task<IActionResult> GetAsync()
+        {
+            var spendingCategoryDtos =
+                await _spendingCategoryService.GetAllAsync();
 
-			return Ok(_mapper.Map<List<SpendingCategoryResponseModel>>(spendingCategoryDtos));
-		}
+            return Ok(_mapper.Map<List<SpendingCategoryResponseModel>>(spendingCategoryDtos));
+        }
 
-		[HttpGet("{spendingCategoryId}")]
-		public async Task<IActionResult> GetAsync(string spendingCategoryId)
-		{
-			var spendingCategory = await _spendingCategoryService
-				.GetAsync(Guid.Parse(spendingCategoryId));
+        [HttpGet("{spendingCategoryId}")]
+        public async Task<IActionResult> GetAsync(string spendingCategoryId)
+        {
+            var spendingCategory = await _spendingCategoryService
+                .GetAsync(Guid.Parse(spendingCategoryId));
 
-			return Ok(_mapper.Map<SpendingCategoryResponseModel>(spendingCategory));
-		}
+            return Ok(_mapper.Map<SpendingCategoryResponseModel>(spendingCategory));
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> Post(SpendingCategoryRequestModel spendingCategoryRequest)
-		{
-			var currentUserName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			spendingCategoryRequest.UserName = currentUserName;
+        [HttpPost]
+        public async Task<IActionResult> Post(SpendingCategoryRequestModel spendingCategoryRequest)
+        {
+            var currentUserName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            spendingCategoryRequest.UserName = currentUserName;
 
-			await _spendingCategoryService.CreateAsync(
-				_mapper.Map<SpendingCategoryPostDTO>(spendingCategoryRequest));
+            await _spendingCategoryService.CreateAsync(
+                _mapper.Map<SpendingCategoryPostDTO>(spendingCategoryRequest));
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[HttpDelete]
-		public async Task<IActionResult> Delete(
-			SpendingCategoryRequestModel spendingCategoryRequest)
-		{
-			var currentUserName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			spendingCategoryRequest.UserName = currentUserName;
+        [HttpDelete("{categoryId}")]
+        public async Task<IActionResult> Delete(string categoryId)
+        {
+            var currentUserName = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-			await _spendingCategoryService.DeleteAsync(
-				_mapper.Map<SpendingCategoryPostDTO>(spendingCategoryRequest));
+            await _spendingCategoryService.DeleteAsync(new SpendingCategoryPostDTO
+            {
+                Id = Guid.Parse(categoryId),
+                UserName = currentUserName
+            });
 
-			return Ok();
-		}
-	}
+            return Ok();
+        }
+    }
 }

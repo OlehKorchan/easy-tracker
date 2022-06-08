@@ -4,6 +4,7 @@ using EasyTracker.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTracker.DAL.Migrations
 {
     [DbContext(typeof(EasyTrackerDbContext))]
-    partial class EasyTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220607081911_Fix spending category model with planned and spending model removing planned")]
+    partial class Fixspendingcategorymodelwithplannedandspendingmodelremovingplanned
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
