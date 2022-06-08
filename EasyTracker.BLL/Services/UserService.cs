@@ -111,5 +111,28 @@ namespace EasyTracker.BLL.Services
 
             return amount;
         }
+
+        public Task<decimal> GetUserAmountAsync(string userName)
+        {
+            return _unitOfWork.UserRepository.GetUserAmountAsync(userName);
+        }
+
+        public Task<CurrencyCode> GetUserMainCurrencyAsync(string userName)
+        {
+            return _unitOfWork.UserRepository.GetUserMainCurrencyAsync(userName);
+        }
+
+        public async Task<UserStatisticsDTO> GetUserStatisticsAsync(string userName)
+        {
+            var user = await _unitOfWork.UserRepository.GetByNameAsync(userName);
+
+            var userStatisticsDTO = _mapper.Map<UserStatisticsDTO>(user);
+            userStatisticsDTO.Salaries = _mapper.Map<List<SalaryDTO>>(user.Salaries);
+            userStatisticsDTO.SpendingCategories = _mapper.Map<List<SpendingCategoryGetDTO>>(
+                user.SpendingCategories
+            );
+
+            return userStatisticsDTO;
+        }
     }
 }

@@ -25,13 +25,27 @@ namespace EasyTracker.API.Controllers
         [HttpGet("amount")]
         public async Task<IActionResult> GetUserAmountAsync()
         {
-            var currentUser = await _userService.GetUserAsync(
-                User.FindFirstValue(ClaimTypes.NameIdentifier)
-            );
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userAmount = await _userService.GetUserAmountAsync(userName);
 
-            var userResponseModel = new UserAmountResponseModel { Amount = currentUser.Amount };
+            var userResponseModel = new UserAmountResponseModel { Amount = userAmount };
 
             return Ok(userResponseModel);
+        }
+
+        [HttpGet("statistics")]
+        public async Task<IActionResult> GetUserStatisticsAsync()
+        {
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userStatistics = await _userService.GetUserStatisticsAsync(userName);
+            var userResponse = _mapper.Map<UserStatisticsResponseModel>(userStatistics);
+            userResponse.Salaries = _mapper.Map<List<SalaryResponseModel>>(userStatistics.Salaries);
+            userResponse.SpendingCategories = _mapper.Map<List<SpendingCategoryResponseModel>>(
+                userStatistics.SpendingCategories
+            );
+
+            return Ok(userResponse);
         }
 
         [HttpPut("main-currency")]
@@ -47,6 +61,16 @@ namespace EasyTracker.API.Controllers
             await _userService.UpdateMainCurrencyAsync(modelDto);
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserMainCurrency()
+        {
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userMainCurrencyResponse = await _userService.GetUserMainCurrencyAsync(userName);
+
+            return Ok(new UserMainCurrencyResponse { MainCurrency = userMainCurrencyResponse });
         }
     }
 }
