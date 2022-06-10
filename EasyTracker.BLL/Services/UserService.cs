@@ -33,51 +33,57 @@ namespace EasyTracker.BLL.Services
 
         public async Task AddAmountAsync(decimal amount, string userName)
         {
-            var currentUser = await _unitOfWork.UserRepository.GetByNameAsync(userName);
-            currentUser.Amount += amount;
-
-            _unitOfWork.UserRepository.Update(currentUser);
+            await _unitOfWork.UserRepository.AddAmountAsync(userName, amount);
             _unitOfWork.SaveAsync().GetAwaiter().GetResult();
         }
 
-        public async Task AddMainCategoriesAsync(string userName)
+        public async Task InitializeBaseUserPropertiesAsync(string userName)
         {
             var mainCategories = await _spendingCategoryService.GetAllMainAsync();
 
-            var currentUser = await _unitOfWork.UserRepository.GetByNameAsync(userName);
+            var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(userName);
 
             var userBaseCategories = mainCategories.Select(
                 c =>
                 {
                     var newCategory = _mapper.Map<SpendingCategory>(c);
-                    newCategory.UserId = currentUser.Id;
+                    newCategory.Id = Guid.Empty;
+                    newCategory.UserId = userId;
                     return newCategory;
                 }
             );
 
-            await _spendingCategoryService.CreateManyAsync(userBaseCategories);
+            var userMainCurrencyBalance = new CurrencyBalance
+            {
+                Currency = CurrencyCode.USD,
+                UserId = userId
+            };
 
-            _unitOfWork.UserRepository.Update(currentUser);
+            await _unitOfWork.CurrencyBalanceRepository.AddAsync(userMainCurrencyBalance);
+            await _spendingCategoryService.CreateManyAsync(userBaseCategories);
             _unitOfWork.SaveAsync().GetAwaiter().GetResult();
         }
 
         public async Task UpdateMainCurrencyAsync(MainCurrencyRequestDTO model)
         {
-            var userToUpdate = await _unitOfWork.UserRepository.GetByNameAsync(model.UserName);
-
             if (model.Recalculate)
             {
-                userToUpdate.Amount = await RecalculateAmountAsync(
-                    userToUpdate.Id,
-                    userToUpdate.Amount,
-                    userToUpdate.MainCurrency,
+                var user = await _unitOfWork.UserRepository.GetByNameAsync(model.UserName);
+                var newAmount = await RecalculateAmountAsync(
+                    user.Id,
+                    user.Amount,
+                    user.MainCurrency,
                     model.NewMainCurrencyCode
                 );
+
+                await _unitOfWork.UserRepository.UpdateAmountAsync(model.UserName, newAmount);
             }
 
-            userToUpdate.MainCurrency = model.NewMainCurrencyCode;
+            await _unitOfWork.UserRepository.UpdateMainCurrencyAsync(
+                model.UserName,
+                model.NewMainCurrencyCode
+            );
 
-            _unitOfWork.UserRepository.Update(userToUpdate);
             _unitOfWork.SaveAsync().GetAwaiter().GetResult();
         }
 
@@ -131,12 +137,65 @@ namespace EasyTracker.BLL.Services
 
         public async Task<UserStatisticsDTO> GetUserStatisticsAsync(string userName)
         {
-            var user = await _unitOfWork.UserRepository.GetByNameAsync(userName);
+            var user = await _unitOfWork.UserRepository.GetWithStatisticsByNameAsync(userName);
 
             var userStatisticsDTO = _mapper.Map<UserStatisticsDTO>(user);
             userStatisticsDTO.Salaries = _mapper.Map<List<SalaryDTO>>(user.Salaries);
             userStatisticsDTO.SpendingCategories = _mapper.Map<List<SpendingCategoryGetDTO>>(
                 user.SpendingCategories
+            );
+
+            var userCurrencyRates = await _unitOfWork.CurrencyRateRepository.GetAsync(
+                user.Id,
+                user.MainCurrency
+            );
+            var baseCurrencyRates = await _unitOfWork.BaseCurrencyRateRepository.GetAsync(
+                user.MainCurrency
+            );
+
+            userStatisticsDTO.SpendingCategories
+                .Where(sc => sc.Spendings?.Count > 0)
+                .ToList()
+                .ForEach(
+                    sc =>
+                    {
+                        var amount = 0m;
+
+                        foreach (var spending in sc.Spendings)
+                        {
+                            BaseCurrencyRate matchedRate = userCurrencyRates.Find(
+                                ucr =>
+                                    ucr.FromCurrency == spending.Currency
+                                    || ucr.ToCurrency == spending.Currency
+                            );
+
+                            if (matchedRate == null)
+                            {
+                                matchedRate = baseCurrencyRates.Find(
+                                    bcr =>
+                                        bcr.FromCurrency == spending.Currency
+                                        || bcr.ToCurrency == spending.Currency
+                                );
+                            }
+
+                            var rate =
+                                matchedRate == null
+                                    ? 1m
+                                    : (decimal)(
+                                          matchedRate.FromCurrency == user.MainCurrency
+                                              ? matchedRate.ReverseRate
+                                              : matchedRate.Rate
+                                      );
+
+                            amount += spending.Amount * rate;
+                        }
+
+                        sc.SpendAmount = amount;
+                    }
+                );
+
+            userStatisticsDTO.CurrencyBalances = _mapper.Map<List<CurrencyBalanceDTO>>(
+                user.CurrencyBalances
             );
 
             return userStatisticsDTO;

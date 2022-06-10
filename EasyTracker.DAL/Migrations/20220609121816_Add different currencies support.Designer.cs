@@ -4,6 +4,7 @@ using EasyTracker.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTracker.DAL.Migrations
 {
     [DbContext(typeof(EasyTrackerDbContext))]
-    partial class EasyTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220609121816_Add different currencies support")]
+    partial class Adddifferentcurrenciessupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,39 +155,24 @@ namespace EasyTracker.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ea9208e8-3838-49ce-80ad-468cea820b86"),
+                            Id = new Guid("64f01fc5-b710-4b0f-b7fb-5f96f4d04576"),
                             CategoryName = "Food",
-                            ImageSrc = "fastfood"
+                            Description = "",
+                            ImageSrc = "https://i.pinimg.com/564x/fd/80/ec/fd80ecec48eba2a9adb76e4133905879.jpg"
                         },
                         new
                         {
-                            Id = new Guid("bac73f2d-5456-4b26-a7eb-387852cfee66"),
+                            Id = new Guid("33a3e088-8ff4-4b6b-97bb-e03e002c68f8"),
                             CategoryName = "Transport",
-                            ImageSrc = "train"
+                            Description = "",
+                            ImageSrc = "https://images.squarespace-cdn.com/content/v1/5a668f1080bd5e34d18a7e76/1528433925491-J4AL2S34T9O2QNMGPQ0L/Public_Transport_02_2x.png?format=300w"
                         },
                         new
                         {
-                            Id = new Guid("e3c2a39d-ac7e-477c-aed1-d6586e6c27d6"),
+                            Id = new Guid("5134a9d8-2c6d-4155-8c6b-033baa74a928"),
                             CategoryName = "Health",
-                            ImageSrc = "healing"
-                        },
-                        new
-                        {
-                            Id = new Guid("0449468f-bc04-4423-97e4-2e56826f5cc1"),
-                            CategoryName = "Other",
-                            ImageSrc = "info"
-                        },
-                        new
-                        {
-                            Id = new Guid("a3e814b2-5698-4d4e-be03-772b295e47ce"),
-                            CategoryName = "Restaurants",
-                            ImageSrc = "restaurant"
-                        },
-                        new
-                        {
-                            Id = new Guid("2553d9c5-f104-49a3-80af-a27eb32fc274"),
-                            CategoryName = "Technics",
-                            ImageSrc = "android"
+                            Description = "",
+                            ImageSrc = "https://pic.onlinewebfonts.com/svg/img_445017.png"
                         });
                 });
 
@@ -200,9 +187,6 @@ namespace EasyTracker.DAL.Migrations
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Currency")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
@@ -256,9 +240,6 @@ namespace EasyTracker.DAL.Migrations
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Currency")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("SpendingCategoryId")
                         .HasColumnType("uniqueidentifier");

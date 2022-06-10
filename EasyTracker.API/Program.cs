@@ -72,6 +72,7 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IMainSpendingCategoryRepository, MainSpendingCategoryRepository>();
 
 builder.Services.AddTransient<ISalaryService, SalaryService>();
+builder.Services.AddTransient<ISpendingService, SpendingService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ISpendingCategoryService, SpendingCategoryService>();
 builder.Services.AddTransient<IJwtGenerator, JwtGenerator>();

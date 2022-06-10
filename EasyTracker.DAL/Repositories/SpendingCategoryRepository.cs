@@ -17,11 +17,18 @@ namespace EasyTracker.DAL.Repositories
         public Task<SpendingCategory> GetAsync(Guid categoryId) =>
             _spendingCategories
                 .Include(c => c.Spendings)
+                .Include(sc => sc.User)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(sc => sc.Id == categoryId);
 
-        public Task<List<SpendingCategory>> GetAllAsync() =>
-            _spendingCategories.Include(c => c.Spendings).AsNoTracking().ToListAsync();
+        public Task<List<SpendingCategory>> GetAllAsync(string userId)
+        {
+            return _spendingCategories
+                .Where(u => u.UserId == userId)
+                .Include(c => c.Spendings)
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         public Task AddAsync(SpendingCategory spendingCategory) =>
             _spendingCategories.AddAsync(spendingCategory).AsTask();

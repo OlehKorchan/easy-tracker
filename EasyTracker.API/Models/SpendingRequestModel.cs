@@ -1,8 +1,8 @@
 using EasyTracker.DAL.Enums;
 
-namespace EasyTracker.DAL.Models
+namespace EasyTracker.API.Models
 {
-    public class Spending : ModelBase
+    public class SpendingRequestModel
     {
         public decimal Amount { get; set; }
 
@@ -11,7 +11,5 @@ namespace EasyTracker.DAL.Models
         public CurrencyCode Currency { get; set; }
 
         public Guid SpendingCategoryId { get; set; }
-
-        public SpendingCategory SpendingCategory { get; set; }
     }
 }

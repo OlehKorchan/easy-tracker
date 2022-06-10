@@ -12,12 +12,27 @@ namespace EasyTracker.DAL.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Salary>();
+            builder.Entity<CurrencyBalance>();
             builder.Entity<SpendingCategory>();
             builder.Entity<MainSpendingCategory>().HasData(GetMainSpendingCategories());
             builder.Entity<Saving>();
             builder.Entity<Spending>();
             builder.Entity<CurrencyRate>();
             builder.Entity<BaseCurrencyRate>().HasData(GetBaseCurrencyRates());
+
+            builder
+                .Entity<User>()
+                .HasMany(u => u.CurrencyBalances)
+                .WithOne(cb => cb.User)
+                .HasForeignKey(cb => cb.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .Entity<User>()
+                .HasMany(navigationExpression: u => u.CurrencyRates)
+                .WithOne(cr => cr.User)
+                .HasForeignKey(cr => cr.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .Entity<User>()
@@ -109,27 +124,40 @@ namespace EasyTracker.DAL.Data
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("EA9208E8-3838-49CE-80AD-468CEA820B86"),
                     CategoryName = "Food",
-                    Description = string.Empty,
-                    ImageSrc =
-                        "https://i.pinimg.com/564x/fd/80/ec/fd80ecec48eba2a9adb76e4133905879.jpg"
+                    ImageSrc = "fastfood"
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("BAC73F2D-5456-4B26-A7EB-387852CFEE66"),
                     CategoryName = "Transport",
-                    Description = string.Empty,
-                    ImageSrc =
-                        "https://images.squarespace-cdn.com/content/v1/5a668f1080bd5e34d18a7e76/1528433925491-J4AL2S34T9O2QNMGPQ0L/Public_Transport_02_2x.png?format=300w"
+                    ImageSrc = "train"
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("E3C2A39D-AC7E-477C-AED1-D6586E6C27D6"),
                     CategoryName = "Health",
-                    Description = string.Empty,
-                    ImageSrc = "https://pic.onlinewebfonts.com/svg/img_445017.png"
-                }
+                    ImageSrc = "healing"
+                },
+                new MainSpendingCategory()
+                {
+                    Id = Guid.Parse("0449468F-BC04-4423-97E4-2E56826F5CC1"),
+                    CategoryName = "Other",
+                    ImageSrc = "info"
+                },
+                new MainSpendingCategory()
+                {
+                    Id = Guid.Parse("A3E814B2-5698-4D4E-BE03-772B295E47CE"),
+                    CategoryName = "Restaurants",
+                    ImageSrc = "restaurant"
+                },
+                new MainSpendingCategory()
+                {
+                    Id = Guid.Parse("2553D9C5-F104-49A3-80AF-A27EB32FC274"),
+                    CategoryName = "Technics",
+                    ImageSrc = "android"
+                },
             };
     }
 }

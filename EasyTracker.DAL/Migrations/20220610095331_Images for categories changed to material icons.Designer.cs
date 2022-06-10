@@ -4,6 +4,7 @@ using EasyTracker.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTracker.DAL.Migrations
 {
     [DbContext(typeof(EasyTrackerDbContext))]
-    partial class EasyTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220610095331_Images for categories changed to material icons")]
+    partial class Imagesforcategorieschangedtomaterialicons
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,9 +203,6 @@ namespace EasyTracker.DAL.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Currency")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
 
@@ -256,9 +255,6 @@ namespace EasyTracker.DAL.Migrations
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Currency")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("SpendingCategoryId")
                         .HasColumnType("uniqueidentifier");

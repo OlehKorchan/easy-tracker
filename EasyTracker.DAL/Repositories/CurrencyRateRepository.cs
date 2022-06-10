@@ -27,10 +27,27 @@ namespace EasyTracker.DAL.Repositories
                     c =>
                         c.UserId == userId
                         && (
-                            c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency
+                            (c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency)
                             || (c.FromCurrency == toCurrency && c.ToCurrency == fromCurrency)
                         )
                 );
+        }
+
+        public Task<List<CurrencyRate>> GetAsync(string userId)
+        {
+            return _currencyRates.AsNoTracking().Where(r => r.UserId == userId).ToListAsync();
+        }
+
+        public Task<List<CurrencyRate>> GetAsync(string userId, CurrencyCode currency)
+        {
+            return _currencyRates
+                .AsNoTracking()
+                .Where(
+                    r =>
+                        r.UserId == userId
+                        && (r.FromCurrency == currency || r.ToCurrency == currency)
+                )
+                .ToListAsync();
         }
     }
 }

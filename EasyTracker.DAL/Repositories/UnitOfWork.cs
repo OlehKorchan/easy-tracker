@@ -13,6 +13,7 @@ namespace EasyTracker.DAL.Repositories
         private IUserRepository _userRepository;
         private ICurrencyRateRepository _currencyRateRepository;
         private IBaseCurrencyRateRepository _baseCurrencyRateRepository;
+        private ICurrencyBalanceRepository _currencyBalanceRepository;
 
         public UnitOfWork(EasyTrackerDbContext dbContext) => _dbContext = dbContext;
 
@@ -35,6 +36,9 @@ namespace EasyTracker.DAL.Repositories
 
         public IBaseCurrencyRateRepository BaseCurrencyRateRepository =>
             _baseCurrencyRateRepository ??= new BaseCurrencyRateRepository(_dbContext);
+
+        public ICurrencyBalanceRepository CurrencyBalanceRepository =>
+            _currencyBalanceRepository ??= new CurrencyBalanceRepository(_dbContext);
 
         public Task SaveAsync() => _dbContext.SaveChangesAsync();
     }

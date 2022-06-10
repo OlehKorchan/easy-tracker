@@ -8,7 +8,7 @@ namespace EasyTracker.DAL.Interfaces
         public ISpendingRepository SpendingRepository { get; }
         public IUserRepository UserRepository { get; }
         public ICurrencyRateRepository CurrencyRateRepository { get; }
-
+        public ICurrencyBalanceRepository CurrencyBalanceRepository { get; }
         public IBaseCurrencyRateRepository BaseCurrencyRateRepository { get; }
 
         Task SaveAsync();

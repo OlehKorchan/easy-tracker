@@ -21,9 +21,22 @@ namespace EasyTracker.DAL.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(
                     c =>
-                        c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency
+                        (c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency)
                         || (c.FromCurrency == toCurrency && c.ToCurrency == fromCurrency)
                 );
+        }
+
+        public Task<List<BaseCurrencyRate>> GetAsync()
+        {
+            return _baseCurrencyRates.AsNoTracking().ToListAsync();
+        }
+
+        public Task<List<BaseCurrencyRate>> GetAsync(CurrencyCode currency)
+        {
+            return _baseCurrencyRates
+                .AsNoTracking()
+                .Where(r => r.FromCurrency == currency || r.ToCurrency == currency)
+                .ToListAsync();
         }
     }
 }
