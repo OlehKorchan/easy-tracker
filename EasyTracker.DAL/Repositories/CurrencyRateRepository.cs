@@ -6,48 +6,48 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EasyTracker.DAL.Repositories
 {
-    public class CurrencyRateRepository : ICurrencyRateRepository
-    {
-        private readonly DbSet<CurrencyRate> _currencyRates;
+	public class CurrencyRateRepository : ICurrencyRateRepository
+	{
+		private readonly DbSet<CurrencyRate> _currencyRates;
 
-        public CurrencyRateRepository(EasyTrackerDbContext context)
-        {
-            _currencyRates = context.Set<CurrencyRate>();
-        }
+		public CurrencyRateRepository(EasyTrackerDbContext context)
+		{
+			_currencyRates = context.Set<CurrencyRate>();
+		}
 
-        public Task<CurrencyRate> GetAsync(
-            string userId,
-            CurrencyCode fromCurrency,
-            CurrencyCode toCurrency
-        )
-        {
-            return _currencyRates
-                .AsNoTracking()
-                .FirstOrDefaultAsync(
-                    c =>
-                        c.UserId == userId
-                        && (
-                            (c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency)
-                            || (c.FromCurrency == toCurrency && c.ToCurrency == fromCurrency)
-                        )
-                );
-        }
+		public Task<CurrencyRate> GetAsync(
+			string userId,
+			CurrencyCode fromCurrency,
+			CurrencyCode toCurrency
+		)
+		{
+			return _currencyRates
+				.AsNoTracking()
+				.FirstOrDefaultAsync(
+					c =>
+						c.UserId == userId
+						&& (
+							(c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency)
+							|| (c.FromCurrency == toCurrency && c.ToCurrency == fromCurrency)
+						)
+				);
+		}
 
-        public Task<List<CurrencyRate>> GetAsync(string userId)
-        {
-            return _currencyRates.AsNoTracking().Where(r => r.UserId == userId).ToListAsync();
-        }
+		public Task<List<CurrencyRate>> GetAsync(string userId)
+		{
+			return _currencyRates.AsNoTracking().Where(r => r.UserId == userId).ToListAsync();
+		}
 
-        public Task<List<CurrencyRate>> GetAsync(string userId, CurrencyCode currency)
-        {
-            return _currencyRates
-                .AsNoTracking()
-                .Where(
-                    r =>
-                        r.UserId == userId
-                        && (r.FromCurrency == currency || r.ToCurrency == currency)
-                )
-                .ToListAsync();
-        }
-    }
+		public Task<List<CurrencyRate>> GetAsync(string userId, CurrencyCode currency)
+		{
+			return _currencyRates
+				.AsNoTracking()
+				.Where(
+					r =>
+						r.UserId == userId
+						&& (r.FromCurrency == currency || r.ToCurrency == currency)
+				)
+				.ToListAsync();
+		}
+	}
 }

@@ -4,11 +4,11 @@ using EasyTracker.DAL.Models;
 
 namespace EasyTracker.API.MappingProfiles
 {
-    public class CurrencyBalanceMappingProfile : Profile
-    {
-        public CurrencyBalanceMappingProfile()
-        {
-            CreateMap<CurrencyBalance, CurrencyBalanceDTO>();
-        }
-    }
+	public class CurrencyBalanceMappingProfile : Profile
+	{
+		public CurrencyBalanceMappingProfile()
+		{
+			CreateMap<CurrencyBalance, CurrencyBalanceDTO>();
+		}
+	}
 }

@@ -5,13 +5,13 @@ using EasyTracker.DAL.Models;
 
 namespace EasyTracker.API.MappingProfiles
 {
-    public class SalaryMappingProfile : Profile
-    {
-        public SalaryMappingProfile()
-        {
-            CreateMap<Salary, SalaryDTO>().ReverseMap();
-            CreateMap<SalaryDTO, SalaryResponseModel>();
-            CreateMap<SalaryCreateRequestModel, SalaryDTO>();
-        }
-    }
+	public class SalaryMappingProfile : Profile
+	{
+		public SalaryMappingProfile()
+		{
+			CreateMap<Salary, SalaryDTO>().ReverseMap();
+			CreateMap<SalaryDTO, SalaryResponseModel>();
+			CreateMap<SalaryCreateRequestModel, SalaryDTO>();
+		}
+	}
 }

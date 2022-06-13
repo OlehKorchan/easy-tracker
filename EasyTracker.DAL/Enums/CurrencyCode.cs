@@ -1,10 +1,10 @@
 namespace EasyTracker.DAL.Enums
 {
-    public enum CurrencyCode
-    {
-        UAH,
-        USD,
-        EUR,
-        GBP
-    }
+	public enum CurrencyCode
+	{
+		UAH,
+		USD,
+		EUR,
+		GBP
+	}
 }

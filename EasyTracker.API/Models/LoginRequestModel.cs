@@ -10,7 +10,5 @@ namespace EasyTracker.API.Models
 		[Required(ErrorMessage = "Please, specify valid user password")]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
-
-		public bool RememberMe { get; set; }
 	}
 }

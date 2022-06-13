@@ -9,12 +9,17 @@ namespace EasyTracker.API.Controllers
 	{
 		private readonly ISpendingCategoryService _service;
 
-		public MainSpendingCategoriesController(ISpendingCategoryService service) => _service = service;
+		public MainSpendingCategoriesController(
+			ISpendingCategoryService service)
+		{
+			_service = service;
+		}
 
 		[HttpGet("{categoryId}")]
 		public async Task<IActionResult> GetAsync(string categoryId)
 		{
-			var category = await _service.GetMainAsync(Guid.Parse(categoryId));
+			var category = await _service.GetMainAsync(
+				Guid.Parse(categoryId));
 
 			return Ok(category);
 		}
@@ -22,7 +27,8 @@ namespace EasyTracker.API.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAsync()
 		{
-			var categories = await _service.GetAllMainAsync();
+			var categories =
+				await _service.GetAllMainAsync();
 
 			return Ok(categories);
 		}
