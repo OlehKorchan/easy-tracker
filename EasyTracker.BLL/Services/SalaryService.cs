@@ -40,10 +40,6 @@ namespace EasyTracker.BLL.Services
 				throw new InvalidOperationException();
 			}
 
-			await UpdateUserCurrencyBalanceAsync(user,
-				salaryToDelete.Currency,
-				-salaryToDelete.Amount);
-
 			await _unitOfWork.SalaryRepository.DeleteAsync(salaryToDelete.Id);
 
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
@@ -63,45 +59,6 @@ namespace EasyTracker.BLL.Services
 			var salaries = await _unitOfWork.SalaryRepository.GetAllAsync(userId);
 
 			return _mapper.Map<List<Salary>, List<SalaryDTO>>(salaries);
-		}
-
-		private async Task UpdateUserCurrencyBalanceAsync(
-			User user,
-			CurrencyCode currency,
-			decimal amount
-		)
-		{
-			var currencyBalance = await _unitOfWork.CurrencyBalanceRepository.GetAsync(
-				user.Id,
-				currency
-			);
-
-			if (currencyBalance == null)
-			{
-				var newCurrencyBalance = new CurrencyBalance
-				{
-					Amount = amount > 0 ? amount : 0,
-					UserId = user.Id
-				};
-
-				_unitOfWork.CurrencyBalanceRepository
-					.AddAsync(newCurrencyBalance)
-					.GetAwaiter()
-					.GetResult();
-			}
-			else
-			{
-				currencyBalance.Amount += amount;
-				if (currencyBalance.Amount < 0)
-				{
-					currencyBalance.Amount = 0;
-				}
-
-				_unitOfWork.CurrencyBalanceRepository
-					.UpdateAmountAsync(currencyBalance.Id, currencyBalance.Amount)
-					.GetAwaiter()
-					.GetResult();
-			}
 		}
 	}
 }

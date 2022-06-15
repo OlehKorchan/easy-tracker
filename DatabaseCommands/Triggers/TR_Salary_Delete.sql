@@ -1,5 +1,5 @@
-CREATE TRIGGER TR_Salary_Insert ON [dbo].[Salary]
-	AFTER INSERT
+CREATE TRIGGER TR_Salary_Delete ON [dbo].[Salary]
+	AFTER DELETE
 AS
 begin
 	begin try
@@ -18,7 +18,7 @@ begin
 				@userId = UserId,
 				@salaryAmount = Amount,
 				@currencyCode = Currency
-			from inserted;
+			from deleted;
 
 			select
 				@userCurrency = users.MainCurrency,
@@ -55,10 +55,10 @@ begin
 			print('user id: ' + cast(@userId as nvarchar(50)))
 			print('currency balance id: ' + cast(@currencyBalanceId as nvarchar(50)))
 
-			update dbo.AspNetUsers set Amount = Amount + (@salaryAmount * @exchangeRate)
+			update dbo.AspNetUsers set Amount = Amount - (@salaryAmount * @exchangeRate)
 			where Id = @userId;
 
-			update dbo.CurrencyBalance set Amount = Amount + @salaryAmount
+			update dbo.CurrencyBalance set Amount = Amount - @salaryAmount
 			where Id = @currencyBalanceId;
 
 		commit transaction
