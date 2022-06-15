@@ -32,8 +32,8 @@ namespace EasyTracker.API.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetUserSalariesAsync()
 		{
-			var salaries = await _salaryService.GetAllUserSalariesAsync(User.FindFirstValue(
-						ClaimTypes.NameIdentifier));
+			var salaries = await _salaryService.GetAllUserSalariesAsync(
+				User.FindFirstValue(ClaimTypes.NameIdentifier));
 
 			var userSalariesResponse =
 				new UserSalariesResponseModel
@@ -47,8 +47,10 @@ namespace EasyTracker.API.Controllers
 		}
 
 		[HttpGet("{salaryId}")]
-		public async Task<IActionResult> GetAsync(string salaryId) =>
-			Ok(await _salaryService.GetAsync(Guid.Parse(salaryId)));
+		public async Task<IActionResult> GetAsync(string salaryId)
+		{
+			return Ok(await _salaryService.GetAsync(Guid.Parse(salaryId)));
+		}
 
 		[HttpPost]
 		public async Task<IActionResult> PostAsync(SalaryCreateRequestModel salaryCreate)
@@ -63,12 +65,11 @@ namespace EasyTracker.API.Controllers
 			{
 				ModelErrorsHelper.PutModelStateErrorsToResponseModel(
 					ModelState,
-					salaryResponseModel
-				);
+					salaryResponseModel);
+
 				_logger.LogError(
 					"Salary validation failed with errors: {errors}",
-					salaryResponseModel.Errors
-				);
+					salaryResponseModel.Errors);
 
 				return Ok(salaryResponseModel);
 			}

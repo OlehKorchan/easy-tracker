@@ -5,8 +5,9 @@ namespace EasyTracker.DAL.Interfaces
 {
 	public interface IBaseCurrencyRateRepository
 	{
-		Task<List<BaseCurrencyRate>> GetAsync(CurrencyCode currency);
-		Task<BaseCurrencyRate> GetAsync(CurrencyCode fromCurrency, CurrencyCode toCurrency);
-		Task<List<BaseCurrencyRate>> GetAsync();
+		Task<List<BaseCurrencyRate>> GetRateFromCurrencyAsync(CurrencyCode currency);
+		Task<List<BaseCurrencyRate>> GetRateToCurrencyAsync(CurrencyCode currency);
+		Task<BaseCurrencyRate> GetRateAsync(CurrencyCode fromCurrency, CurrencyCode toCurrency);
+		Task<List<BaseCurrencyRate>> GetAllRatesAsync();
 	}
 }

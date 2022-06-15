@@ -15,38 +15,43 @@ namespace EasyTracker.DAL.Repositories
 			_currencyRates = context.Set<CurrencyRate>();
 		}
 
-		public Task<CurrencyRate> GetAsync(
+		public Task<CurrencyRate> GetUserRateAsync(
 			string userId,
 			CurrencyCode fromCurrency,
-			CurrencyCode toCurrency
-		)
+			CurrencyCode toCurrency)
 		{
 			return _currencyRates
 				.AsNoTracking()
 				.FirstOrDefaultAsync(
 					c =>
 						c.UserId == userId
-						&& (
-							(c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency)
-							|| (c.FromCurrency == toCurrency && c.ToCurrency == fromCurrency)
-						)
-				);
+						&& (c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency));
 		}
 
-		public Task<List<CurrencyRate>> GetAsync(string userId)
+		public Task<List<CurrencyRate>> GetAllUserRatesAsync(string userId)
 		{
-			return _currencyRates.AsNoTracking().Where(r => r.UserId == userId).ToListAsync();
+			return _currencyRates
+				.AsNoTracking()
+				.Where(r => r.UserId == userId)
+				.ToListAsync();
 		}
 
-		public Task<List<CurrencyRate>> GetAsync(string userId, CurrencyCode currency)
+		public Task<List<CurrencyRate>> GetRatesFromCurrencyAsync(string userId, CurrencyCode currency)
 		{
 			return _currencyRates
 				.AsNoTracking()
 				.Where(
 					r =>
 						r.UserId == userId
-						&& (r.FromCurrency == currency || r.ToCurrency == currency)
-				)
+						&& r.FromCurrency == currency)
+				.ToListAsync();
+		}
+
+		public Task<List<CurrencyRate>> GetRatesToCurrencyAsync(string userId, CurrencyCode currency)
+		{
+			return _currencyRates
+				.AsNoTracking()
+				.Where(r => r.UserId == userId && r.ToCurrency == currency)
 				.ToListAsync();
 		}
 	}

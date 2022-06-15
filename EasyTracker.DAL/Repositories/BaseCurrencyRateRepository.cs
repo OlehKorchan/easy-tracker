@@ -15,27 +15,33 @@ namespace EasyTracker.DAL.Repositories
 			_baseCurrencyRates = context.Set<BaseCurrencyRate>();
 		}
 
-		public Task<BaseCurrencyRate> GetAsync(CurrencyCode fromCurrency, CurrencyCode toCurrency)
+		public Task<BaseCurrencyRate> GetRateAsync(CurrencyCode fromCurrency, CurrencyCode toCurrency)
 		{
 			return _baseCurrencyRates
 				.AsNoTracking()
 				.FirstOrDefaultAsync(
 					c =>
-						(c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency)
-						|| (c.FromCurrency == toCurrency && c.ToCurrency == fromCurrency)
-				);
+						c.FromCurrency == fromCurrency && c.ToCurrency == toCurrency);
 		}
 
-		public Task<List<BaseCurrencyRate>> GetAsync()
+		public Task<List<BaseCurrencyRate>> GetAllRatesAsync()
 		{
 			return _baseCurrencyRates.AsNoTracking().ToListAsync();
 		}
 
-		public Task<List<BaseCurrencyRate>> GetAsync(CurrencyCode currency)
+		public Task<List<BaseCurrencyRate>> GetRateFromCurrencyAsync(CurrencyCode currency)
 		{
 			return _baseCurrencyRates
 				.AsNoTracking()
-				.Where(r => r.FromCurrency == currency || r.ToCurrency == currency)
+				.Where(r => r.FromCurrency == currency)
+				.ToListAsync();
+		}
+
+		public Task<List<BaseCurrencyRate>> GetRateToCurrencyAsync(CurrencyCode currency)
+		{
+			return _baseCurrencyRates
+				.AsNoTracking()
+				.Where(r => r.ToCurrency == currency)
 				.ToListAsync();
 		}
 	}

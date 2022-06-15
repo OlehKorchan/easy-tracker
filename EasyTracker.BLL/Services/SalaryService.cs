@@ -21,13 +21,10 @@ namespace EasyTracker.BLL.Services
 		public async Task AddAsync(SalaryDTO salaryDto)
 		{
 			var salary = _mapper.Map<Salary>(salaryDto);
-			var user = await _unitOfWork.UserRepository.GetByNameAsync(salaryDto.UserName);
-			salary.UserId = user.Id;
+			salary.UserId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(salaryDto.UserName);
 			salary.DateAdded = DateTime.UtcNow;
 
 			await _unitOfWork.SalaryRepository.AddAsync(salary);
-			await UpdateUserCurrencyBalanceAsync(user, salaryDto.Currency, salaryDto.Amount);
-			await RecalculateUserBalanceAsync(user, salaryDto.Currency, salaryDto.Amount);
 
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
@@ -46,12 +43,6 @@ namespace EasyTracker.BLL.Services
 			await UpdateUserCurrencyBalanceAsync(user,
 				salaryToDelete.Currency,
 				-salaryToDelete.Amount);
-
-			await RecalculateUserBalanceAsync(
-				user,
-				salaryToDelete.Currency,
-				-salaryToDelete.Amount
-			);
 
 			await _unitOfWork.SalaryRepository.DeleteAsync(salaryToDelete.Id);
 
@@ -111,49 +102,6 @@ namespace EasyTracker.BLL.Services
 					.GetAwaiter()
 					.GetResult();
 			}
-		}
-
-		private async Task RecalculateUserBalanceAsync(
-			User user,
-			CurrencyCode currency,
-			decimal amount
-		)
-		{
-			BaseCurrencyRate currencyRate = await _unitOfWork.CurrencyRateRepository.GetAsync(
-				user.Id,
-				user.MainCurrency,
-				currency
-			);
-
-			if (currencyRate == null)
-			{
-				currencyRate = await _unitOfWork.BaseCurrencyRateRepository.GetAsync(
-					user.MainCurrency,
-					currency
-				);
-			}
-
-			var currentRate = 1m;
-			if (currencyRate != null)
-			{
-				currentRate = (decimal)(
-					currencyRate.FromCurrency == user.MainCurrency
-						? currencyRate.ReverseRate
-						: currencyRate.Rate
-				);
-			}
-
-			user.Amount += amount * currentRate;
-
-			if (user.Amount < 0)
-			{
-				user.Amount = 0;
-			}
-
-			_unitOfWork.UserRepository
-				.UpdateAmountAsync(user.UserName, user.Amount)
-				.GetAwaiter()
-				.GetResult();
 		}
 	}
 }

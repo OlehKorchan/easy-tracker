@@ -4,11 +4,6 @@ indent_style = tab
 indent_size = tab
 tab_width = 4
 
-[*.{cshtml,htm,html,razor}]
-indent_style = space
-indent_size = 4
-tab_width = 4
-
 [*.{json,resjson}]
 indent_style = tab
 indent_size = tab

@@ -69,60 +69,18 @@ namespace EasyTracker.BLL.Services
 			if (model.Recalculate)
 			{
 				var user = await _unitOfWork.UserRepository.GetByNameAsync(model.UserName);
-				var newAmount = await RecalculateAmountAsync(
-					user.Id,
-					user.Amount,
-					user.MainCurrency,
-					model.NewMainCurrencyCode
-				);
 
-				await _unitOfWork.UserRepository.UpdateAmountAsync(model.UserName, newAmount);
+				await RecalculateUserAmountAsync(user, model.NewMainCurrencyCode);
+				user.MainCurrency = model.NewMainCurrencyCode;
+
+				await _unitOfWork.UserRepository.UpdateAsync(user);
 			}
 
 			await _unitOfWork.UserRepository.UpdateMainCurrencyAsync(
 				model.UserName,
-				model.NewMainCurrencyCode
-			);
+				model.NewMainCurrencyCode);
 
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
-		}
-
-		private async Task<decimal> RecalculateAmountAsync(
-			string userId,
-			decimal amount,
-			CurrencyCode oldCurrency,
-			CurrencyCode newCurrency
-		)
-		{
-			BaseCurrencyRate currencyRate = await _unitOfWork.CurrencyRateRepository.GetAsync(
-				userId,
-				oldCurrency,
-				newCurrency
-			);
-
-			if (currencyRate == null)
-			{
-				currencyRate = await _unitOfWork.BaseCurrencyRateRepository.GetAsync(
-					oldCurrency,
-					newCurrency
-				);
-			}
-
-			if (currencyRate == null)
-			{
-				return amount;
-			}
-
-			if (oldCurrency == currencyRate.FromCurrency)
-			{
-				amount *= (decimal)currencyRate.Rate;
-			}
-			else
-			{
-				amount *= (decimal)currencyRate.ReverseRate;
-			}
-
-			return amount;
 		}
 
 		public Task<decimal> GetUserAmountAsync(string userName)
@@ -142,63 +100,63 @@ namespace EasyTracker.BLL.Services
 			var userStatisticsDTO = _mapper.Map<UserStatisticsDTO>(user);
 			userStatisticsDTO.Salaries = _mapper.Map<List<SalaryDTO>>(user.Salaries);
 			userStatisticsDTO.SpendingCategories = _mapper.Map<List<SpendingCategoryGetDTO>>(
-				user.SpendingCategories
-			);
+				user.SpendingCategories);
 
-			var userCurrencyRates = await _unitOfWork.CurrencyRateRepository.GetAsync(
-				user.Id,
-				user.MainCurrency
-			);
-			var baseCurrencyRates = await _unitOfWork.BaseCurrencyRateRepository.GetAsync(
-				user.MainCurrency
-			);
+			var userCurrencyRates = await _unitOfWork
+				.CurrencyRateRepository
+				.GetRatesToCurrencyAsync(user.Id, user.MainCurrency);
+
+			var baseCurrencyRates = await _unitOfWork
+				.BaseCurrencyRateRepository
+				.GetRateToCurrencyAsync(user.MainCurrency);
 
 			userStatisticsDTO.SpendingCategories
 				.Where(sc => sc.Spendings?.Count > 0)
 				.ToList()
-				.ForEach(
-					sc =>
-					{
-						var amount = 0m;
+				.ForEach(sc => sc.SpendAmount = CalculateTotalSpend(
+					sc.Spendings,
+					userCurrencyRates,
+					baseCurrencyRates));
 
-						foreach (var spending in sc.Spendings)
-						{
-							BaseCurrencyRate matchedRate = userCurrencyRates.Find(
-								ucr =>
-									ucr.FromCurrency == spending.Currency
-									|| ucr.ToCurrency == spending.Currency
-							);
-
-							if (matchedRate == null)
-							{
-								matchedRate = baseCurrencyRates.Find(
-									bcr =>
-										bcr.FromCurrency == spending.Currency
-										|| bcr.ToCurrency == spending.Currency
-								);
-							}
-
-							var rate =
-								matchedRate == null
-									? 1m
-									: (decimal)(
-										  matchedRate.FromCurrency == user.MainCurrency
-											  ? matchedRate.ReverseRate
-											  : matchedRate.Rate
-									  );
-
-							amount += spending.Amount * rate;
-						}
-
-						sc.SpendAmount = amount;
-					}
-				);
-
-			userStatisticsDTO.CurrencyBalances = _mapper.Map<List<CurrencyBalanceDTO>>(
-				user.CurrencyBalances
-			);
+			userStatisticsDTO.CurrencyBalances = _mapper.Map<List<CurrencyBalanceDTO>>(user.CurrencyBalances);
 
 			return userStatisticsDTO;
+		}
+
+		private async Task RecalculateUserAmountAsync(User user, CurrencyCode toCurrency)
+		{
+			var currencyRate = await _unitOfWork
+				.CurrencyRateRepository
+				.GetUserRateAsync(
+					user.Id,
+					user.MainCurrency,
+					toCurrency);
+
+			user.Amount *= (decimal) currencyRate.Rate;
+		}
+
+		private static decimal CalculateTotalSpend(
+			IEnumerable<SpendingDTO> spendings,
+			List<CurrencyRate> userCurrencyRates,
+			List<BaseCurrencyRate> baseCurrencyRates)
+		{
+			var total = 0m;
+
+			foreach (var spending in spendings)
+			{
+				BaseCurrencyRate matchedRate = userCurrencyRates.Find(
+					ucr => ucr.FromCurrency == spending.Currency);
+
+				if (matchedRate == null)
+				{
+					matchedRate = baseCurrencyRates.Find(
+						bcr => bcr.FromCurrency == spending.Currency);
+				}
+
+				total += spending.Amount * (decimal) matchedRate.Rate;
+			}
+
+			return total;
 		}
 	}
 }

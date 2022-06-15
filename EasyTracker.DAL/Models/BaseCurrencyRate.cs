@@ -9,7 +9,5 @@ namespace EasyTracker.DAL.Models
 		public CurrencyCode ToCurrency { get; set; }
 
 		public double Rate { get; set; }
-
-		public double ReverseRate { get; set; }
 	}
 }
