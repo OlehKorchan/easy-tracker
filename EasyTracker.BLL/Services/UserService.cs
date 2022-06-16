@@ -10,13 +10,16 @@ namespace EasyTracker.BLL.Services
 	public class UserService : IUserService
 	{
 		private readonly IMapper _mapper;
+		private readonly ICurrencyService _currencyService;
 		private readonly IUnitOfWork _unitOfWork;
 
 		public UserService(
 			IMapper mapper,
-			IUnitOfWork unitOfWork
+			IUnitOfWork unitOfWork,
+			ICurrencyService currencyService
 		)
 		{
+			_currencyService = currencyService;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 		}
@@ -68,21 +71,16 @@ namespace EasyTracker.BLL.Services
 			userStatisticsDTO.SpendingCategories = _mapper.Map<List<SpendingCategoryGetDTO>>(
 				user.SpendingCategories);
 
-			var userCurrencyRates = await _unitOfWork
-				.CurrencyRateRepository
-				.GetRatesToCurrencyAsync(user.Id, user.MainCurrency);
-
-			var baseCurrencyRates = await _unitOfWork
-				.BaseCurrencyRateRepository
-				.GetRateToCurrencyAsync(user.MainCurrency);
+			var currencyRates = await _currencyService.GetAllRatesToCurrencyAsync(
+				user.Id,
+				user.MainCurrency);
 
 			userStatisticsDTO.SpendingCategories
 				.Where(sc => sc.Spendings?.Count > 0)
 				.ToList()
 				.ForEach(sc => sc.SpendAmount = CalculateTotalSpend(
 					sc.Spendings,
-					userCurrencyRates,
-					baseCurrencyRates));
+					currencyRates));
 
 			userStatisticsDTO.CurrencyBalances = _mapper.Map<List<CurrencyBalanceDTO>>(user.CurrencyBalances);
 
@@ -91,33 +89,24 @@ namespace EasyTracker.BLL.Services
 
 		private async Task RecalculateUserAmountAsync(User user, CurrencyCode toCurrency)
 		{
-			var currencyRate = await _unitOfWork
-				.CurrencyRateRepository
-				.GetRateAsync(
-					user.Id,
-					user.MainCurrency,
-					toCurrency);
+			var currencyRate = await _currencyService.GetCurrencyRateAsync(
+				user.Id,
+				user.MainCurrency,
+				toCurrency);
 
 			user.Amount *= (decimal) currencyRate.Rate;
 		}
 
 		private static decimal CalculateTotalSpend(
 			IEnumerable<SpendingDTO> spendings,
-			List<CurrencyRate> userCurrencyRates,
-			List<BaseCurrencyRate> baseCurrencyRates)
+			List<BaseCurrencyRate> currencyRates)
 		{
 			var total = 0m;
 
 			foreach (var spending in spendings)
 			{
-				BaseCurrencyRate matchedRate = userCurrencyRates.Find(
+				var matchedRate = currencyRates.Find(
 					ucr => ucr.FromCurrency == spending.Currency);
-
-				if (matchedRate == null)
-				{
-					matchedRate = baseCurrencyRates.Find(
-						bcr => bcr.FromCurrency == spending.Currency);
-				}
 
 				total += spending.Amount * (decimal) matchedRate.Rate;
 			}
