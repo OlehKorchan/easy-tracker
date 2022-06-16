@@ -16,7 +16,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((_, _, configuration) => configuration.WriteTo.Console());
+builder.Host.UseSerilog((
+	_,
+	_,
+	configuration) => configuration.WriteTo.Console());
 
 if (builder.Environment.IsProduction())
 {
@@ -72,6 +75,7 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IMainSpendingCategoryRepository, MainSpendingCategoryRepository>();
 
 builder.Services.AddTransient<ISalaryService, SalaryService>();
+builder.Services.AddTransient<ICurrencyService, CurrencyService>();
 builder.Services.AddTransient<ISpendingService, SpendingService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ISpendingCategoryService, SpendingCategoryService>();

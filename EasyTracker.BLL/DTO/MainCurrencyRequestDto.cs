@@ -6,8 +6,6 @@ namespace EasyTracker.BLL.DTO
 	{
 		public CurrencyCode NewMainCurrencyCode { get; set; }
 
-		public bool Recalculate { get; set; }
-
 		public string UserName { get; set; }
 	}
 }

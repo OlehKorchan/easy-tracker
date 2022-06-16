@@ -36,16 +36,12 @@ namespace EasyTracker.BLL.Services
 
 		public async Task UpdateMainCurrencyAsync(MainCurrencyRequestDTO model)
 		{
-			if (model.Recalculate)
-			{
-				var user = await _unitOfWork.UserRepository.GetByNameAsync(model.UserName);
+			var user = await _unitOfWork.UserRepository.GetByNameAsync(model.UserName);
 
-				await RecalculateUserAmountAsync(user, model.NewMainCurrencyCode);
-				user.MainCurrency = model.NewMainCurrencyCode;
+			await RecalculateUserAmountAsync(user, model.NewMainCurrencyCode);
+			user.MainCurrency = model.NewMainCurrencyCode;
 
-				await _unitOfWork.UserRepository.UpdateAsync(user);
-			}
-
+			await _unitOfWork.UserRepository.UpdateAmountAsync(model.UserName, user.Amount);
 			await _unitOfWork.UserRepository.UpdateMainCurrencyAsync(
 				model.UserName,
 				model.NewMainCurrencyCode);
@@ -97,7 +93,7 @@ namespace EasyTracker.BLL.Services
 		{
 			var currencyRate = await _unitOfWork
 				.CurrencyRateRepository
-				.GetUserRateAsync(
+				.GetRateAsync(
 					user.Id,
 					user.MainCurrency,
 					toCurrency);
