@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
-using EasyTracker.DAL.Enums;
 using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
 
@@ -33,9 +32,9 @@ namespace EasyTracker.BLL.Services
 		{
 			var salaryToDelete = await _unitOfWork.SalaryRepository.GetAsync(salary.Id);
 
-			var user = await _unitOfWork.UserRepository.GetByNameAsync(salary.UserName);
+			var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(salary.UserName);
 
-			if (!string.Equals(user.Id, salaryToDelete.UserId, StringComparison.OrdinalIgnoreCase))
+			if (!string.Equals(userId, salaryToDelete.UserId, comparisonType: StringComparison.OrdinalIgnoreCase))
 			{
 				throw new InvalidOperationException();
 			}

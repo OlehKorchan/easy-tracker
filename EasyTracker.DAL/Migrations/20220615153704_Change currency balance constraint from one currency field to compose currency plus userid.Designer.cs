@@ -4,6 +4,7 @@ using EasyTracker.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTracker.DAL.Migrations
 {
     [DbContext(typeof(EasyTrackerDbContext))]
-    partial class EasyTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220615153704_Change currency balance constraint from one currency field to compose currency plus userid")]
+    partial class Changecurrencybalanceconstraintfromonecurrencyfieldtocomposecurrencyplususerid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,7 +177,6 @@ namespace EasyTracker.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -183,7 +184,8 @@ namespace EasyTracker.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("Currency", "UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("CurrencyBalance");
                 });
@@ -265,7 +267,6 @@ namespace EasyTracker.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -294,7 +295,6 @@ namespace EasyTracker.DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -578,8 +578,7 @@ namespace EasyTracker.DAL.Migrations
                     b.HasOne("EasyTracker.DAL.Models.User", "User")
                         .WithMany("CurrencyBalances")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -589,8 +588,7 @@ namespace EasyTracker.DAL.Migrations
                     b.HasOne("EasyTracker.DAL.Models.User", "User")
                         .WithMany("Salaries")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -600,8 +598,7 @@ namespace EasyTracker.DAL.Migrations
                     b.HasOne("EasyTracker.DAL.Models.User", "User")
                         .WithMany("Savings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });

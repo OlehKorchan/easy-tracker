@@ -14,11 +14,19 @@ namespace EasyTracker.DAL.Repositories
 			_spendings = db.Set<Spending>();
 		}
 
-		public async Task<Spending> GetAsync(Guid id) =>
-			await _spendings.AsNoTracking().FirstOrDefaultAsync(sp => sp.Id == id);
+		public async Task<Spending> GetAsync(Guid id)
+		{
+			return await _spendings.AsNoTracking().FirstOrDefaultAsync(sp => sp.Id == id);
+		}
 
-		public Task AddAsync(Spending spending) => _spendings.AddAsync(spending).AsTask();
+		public Task AddAsync(Spending spending)
+		{
+			return _spendings.AddAsync(spending).AsTask();
+		}
 
-		public void Delete(Spending spending) => _spendings.Remove(spending);
+		public void Delete(Spending spending)
+		{
+			_spendings.Remove(spending);
+		}
 	}
 }

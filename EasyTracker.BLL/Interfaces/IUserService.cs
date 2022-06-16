@@ -10,7 +10,6 @@ namespace EasyTracker.BLL.Interfaces
 		Task<decimal> GetUserAmountAsync(string userName);
 		Task<CurrencyCode> GetUserMainCurrencyAsync(string userName);
 		Task AddAmountAsync(decimal amount, string userName);
-		Task InitializeBaseUserPropertiesAsync(string userName);
 		Task UpdateMainCurrencyAsync(MainCurrencyRequestDTO model);
 	}
 }

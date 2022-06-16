@@ -21,22 +21,19 @@ namespace EasyTracker.API.Controllers
 		private readonly SignInManager<User> _signInManager;
 		private readonly ILogger<AccountController> _logger;
 		private readonly JwtSettings _jwtSettings;
-		private readonly IUserService _userService;
 
 		public AccountController(
 			UserManager<User> userManager,
 			SignInManager<User> signInManager,
 			IJwtGenerator jwtGenerator,
 			ILogger<AccountController> logger,
-			IOptions<JwtSettings> jwtSettings,
-			IUserService userService
+			IOptions<JwtSettings> jwtSettings
 		)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_jwtGenerator = jwtGenerator;
 			_logger = logger;
-			_userService = userService;
 			_jwtSettings = jwtSettings.Value;
 		}
 
@@ -64,10 +61,6 @@ namespace EasyTracker.API.Controllers
 					_logger.LogInformation(
 						"User {username} successfully registered",
 						registerModel.UserName);
-
-					await _userService
-						.InitializeBaseUserPropertiesAsync(
-							registerModel.UserName);
 
 					await _signInManager.SignInAsync(
 						user, false);

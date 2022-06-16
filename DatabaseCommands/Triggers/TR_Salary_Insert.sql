@@ -6,8 +6,8 @@ begin
 	begin transaction
 
 	declare @userId nvarchar(50);
-	declare @salaryAmount decimal;
-	declare @salaryAmountInUserCurrency decimal;
+	declare @salaryAmount decimal(18,2);
+	declare @salaryAmountInUserCurrency decimal(18,2);
 	declare @salaryCurrency int;
 	declare @userCurrency int;
 	declare @currencyBalanceId uniqueidentifier;

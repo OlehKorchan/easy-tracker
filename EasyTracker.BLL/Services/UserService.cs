@@ -9,17 +9,14 @@ namespace EasyTracker.BLL.Services
 {
 	public class UserService : IUserService
 	{
-		private readonly ISpendingCategoryService _spendingCategoryService;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 
 		public UserService(
-			ISpendingCategoryService spendingCategoryService,
 			IMapper mapper,
 			IUnitOfWork unitOfWork
 		)
 		{
-			_spendingCategoryService = spendingCategoryService;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 		}
@@ -34,33 +31,6 @@ namespace EasyTracker.BLL.Services
 		public async Task AddAmountAsync(decimal amount, string userName)
 		{
 			await _unitOfWork.UserRepository.AddAmountAsync(userName, amount);
-			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
-		}
-
-		public async Task InitializeBaseUserPropertiesAsync(string userName)
-		{
-			var mainCategories = await _spendingCategoryService.GetAllMainAsync();
-
-			var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(userName);
-
-			var userBaseCategories = mainCategories.Select(
-				c =>
-				{
-					var newCategory = _mapper.Map<SpendingCategory>(c);
-					newCategory.Id = Guid.Empty;
-					newCategory.UserId = userId;
-					return newCategory;
-				}
-			);
-
-			var userMainCurrencyBalance = new CurrencyBalance
-			{
-				Currency = CurrencyCode.USD,
-				UserId = userId
-			};
-
-			await _unitOfWork.CurrencyBalanceRepository.AddAsync(userMainCurrencyBalance);
-			await _spendingCategoryService.CreateManyAsync(userBaseCategories);
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 

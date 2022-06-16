@@ -11,10 +11,9 @@ namespace EasyTracker.DAL.Data
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
-			builder.Entity<Salary>();
 			builder
 				.Entity<CurrencyBalance>()
-				.HasIndex(cb => cb.Currency)
+				.HasIndex(cb => new { cb.Currency, cb.UserId })
 				.IsUnique();
 
 			builder.Entity<SpendingCategory>();
@@ -34,6 +33,7 @@ namespace EasyTracker.DAL.Data
 				.HasMany(u => u.CurrencyBalances)
 				.WithOne(cb => cb.User)
 				.HasForeignKey(cb => cb.UserId)
+				.IsRequired()
 				.OnDelete(DeleteBehavior.Cascade);
 
 			builder
@@ -55,6 +55,7 @@ namespace EasyTracker.DAL.Data
 				.HasMany(u => u.Salaries)
 				.WithOne(sc => sc.User)
 				.HasForeignKey(sc => sc.UserId)
+				.IsRequired()
 				.OnDelete(DeleteBehavior.Cascade);
 
 			builder
@@ -62,6 +63,7 @@ namespace EasyTracker.DAL.Data
 				.HasMany(u => u.Savings)
 				.WithOne(sc => sc.User)
 				.HasForeignKey(sc => sc.UserId)
+				.IsRequired()
 				.OnDelete(DeleteBehavior.Cascade);
 
 			base.OnModelCreating(builder);
