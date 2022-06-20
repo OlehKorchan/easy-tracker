@@ -44,11 +44,7 @@ namespace EasyTracker.BLL.Services
 			await RecalculateUserAmountAsync(user, model.NewMainCurrencyCode);
 			user.MainCurrency = model.NewMainCurrencyCode;
 
-			await _unitOfWork.UserRepository.UpdateAmountAsync(model.UserName, user.Amount);
-			await _unitOfWork.UserRepository.UpdateMainCurrencyAsync(
-				model.UserName,
-				model.NewMainCurrencyCode);
-
+			await _unitOfWork.UserRepository.UpdateAsync(user);
 			_unitOfWork.SaveAsync().GetAwaiter().GetResult();
 		}
 

@@ -20,8 +20,10 @@ namespace EasyTracker.DAL.Repositories
 			_dbContext.Entry(user).Property(u => u.Amount).IsModified = true;
 		}
 
-		public Task<User> GetByNameAsync(string userName) =>
-			_dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserName == userName);
+		public Task<User> GetByNameAsync(string userName)
+		{
+			return _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserName == userName);
+		}
 
 		public Task<decimal> GetUserAmountAsync(string userName)
 		{
@@ -65,7 +67,10 @@ namespace EasyTracker.DAL.Repositories
 		public async Task UpdateAsync(User user)
 		{
 			var userToUpdate = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-			_dbContext.Users.Update(user);
+			userToUpdate.Amount = user.Amount;
+			userToUpdate.MainCurrency = user.MainCurrency;
+
+			_dbContext.Users.Update(userToUpdate);
 		}
 
 		public async Task UpdateAmountAsync(string userName, decimal amount)
