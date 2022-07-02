@@ -1,0 +1,14 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/.idea.EasyTracker.iml
+/projectSettingsUpdater.xml
+/contentModel.xml
+/modules.xml
+/.idea
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
