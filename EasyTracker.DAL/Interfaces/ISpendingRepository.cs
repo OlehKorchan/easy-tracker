@@ -1,11 +1,10 @@
 using EasyTracker.DAL.Models;
 
-namespace EasyTracker.DAL.Interfaces
+namespace EasyTracker.DAL.Interfaces;
+
+public interface ISpendingRepository
 {
-	public interface ISpendingRepository
-	{
-		Task<Spending> GetAsync(Guid id);
-		Task AddAsync(Spending spending);
-		void Delete(Spending spending);
-	}
+    Task<Spending> GetAsync(Guid id);
+    Task AddAsync(Spending spending);
+    void Delete(Spending spending);
 }

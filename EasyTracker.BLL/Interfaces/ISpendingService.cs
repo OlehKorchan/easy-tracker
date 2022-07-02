@@ -1,11 +1,10 @@
 using EasyTracker.BLL.DTO;
 
-namespace EasyTracker.BLL.Interfaces
+namespace EasyTracker.BLL.Interfaces;
+
+public interface ISpendingService
 {
-	public interface ISpendingService
-	{
-		Task AddAsync(SpendingDTO spendingDto);
-		Task DeleteAsync(SpendingDTO spendingDto);
-		Task<SpendingDTO> GetAsync(Guid id);
-	}
+    Task AddAsync(SpendingDTO spendingDto);
+    Task DeleteAsync(SpendingDTO spendingDto);
+    Task<SpendingDTO> GetAsync(Guid id);
 }

@@ -2,13 +2,12 @@ using AutoMapper;
 using EasyTracker.API.Models;
 using EasyTracker.BLL.DTO;
 
-namespace EasyTracker.API.MappingProfiles
+namespace EasyTracker.API.MappingProfiles;
+
+public class MainCurrencyRequestMappingProfile : Profile
 {
-	public class MainCurrencyRequestMappingProfile : Profile
-	{
-		public MainCurrencyRequestMappingProfile()
-		{
-			CreateMap<MainCurrencyRequestModel, MainCurrencyRequestDTO>();
-		}
-	}
+    public MainCurrencyRequestMappingProfile()
+    {
+        CreateMap<MainCurrencyRequestModel, MainCurrencyRequestDTO>();
+    }
 }

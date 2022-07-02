@@ -1,9 +1,8 @@
 using EasyTracker.DAL.Models;
 
-namespace EasyTracker.BLL.Interfaces
+namespace EasyTracker.BLL.Interfaces;
+
+public interface IJwtGenerator
 {
-	public interface IJwtGenerator
-	{
-		string GenerateToken(User user);
-	}
+    string GenerateToken(User user);
 }

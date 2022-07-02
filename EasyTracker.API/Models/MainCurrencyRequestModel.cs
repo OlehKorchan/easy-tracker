@@ -1,9 +1,8 @@
 using EasyTracker.DAL.Enums;
 
-namespace EasyTracker.API.Models
+namespace EasyTracker.API.Models;
+
+public class MainCurrencyRequestModel
 {
-	public class MainCurrencyRequestModel
-	{
-		public CurrencyCode NewMainCurrencyCode { get; set; }
-	}
+    public CurrencyCode NewMainCurrencyCode { get; set; }
 }

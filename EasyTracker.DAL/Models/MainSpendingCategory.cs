@@ -1,11 +1,10 @@
-namespace EasyTracker.DAL.Models
+namespace EasyTracker.DAL.Models;
+
+public class MainSpendingCategory : ModelBase
 {
-	public class MainSpendingCategory : ModelBase
-	{
-		public string ImageSrc { get; set; }
+    public string ImageSrc { get; set; }
 
-		public string CategoryName { get; set; }
+    public string CategoryName { get; set; }
 
-		public string Description { get; set; }
-	}
+    public string Description { get; set; }
 }

@@ -41,4 +41,13 @@
     <Folder Include="Helpers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="stylecop.ruleset" />
+    <None Remove=".editorconfig" />
+  </ItemGroup>
+
 </Project>

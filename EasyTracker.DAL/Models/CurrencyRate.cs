@@ -1,9 +1,8 @@
-namespace EasyTracker.DAL.Models
-{
-	public class CurrencyRate : BaseCurrencyRate
-	{
-		public string UserId { get; set; }
+namespace EasyTracker.DAL.Models;
 
-		public User User { get; set; }
-	}
+public class CurrencyRate : BaseCurrencyRate
+{
+    public string UserId { get; set; }
+
+    public User User { get; set; }
 }

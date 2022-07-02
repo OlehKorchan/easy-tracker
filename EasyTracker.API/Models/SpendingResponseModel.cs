@@ -1,17 +1,16 @@
 using EasyTracker.DAL.Enums;
 
-namespace EasyTracker.API.Models
+namespace EasyTracker.API.Models;
+
+public class SpendingResponseModel : ResponseModelBase
 {
-	public class SpendingResponseModel : ResponseModelBase
-	{
-		public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-		public decimal Amount { get; set; }
+    public decimal Amount { get; set; }
 
-		public string Comment { get; set; }
+    public string Comment { get; set; }
 
-		public CurrencyCode Currency { get; set; }
+    public CurrencyCode Currency { get; set; }
 
-		public Guid SpendingCategoryId { get; set; }
-	}
+    public Guid SpendingCategoryId { get; set; }
 }

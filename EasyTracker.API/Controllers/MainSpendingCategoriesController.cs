@@ -1,36 +1,35 @@
 using EasyTracker.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EasyTracker.API.Controllers
+namespace EasyTracker.API.Controllers;
+
+[Route("main-spending-categories")]
+[ApiController]
+public class MainSpendingCategoriesController : ControllerBase
 {
-	[Route("main-spending-categories")]
-	[ApiController]
-	public class MainSpendingCategoriesController : ControllerBase
-	{
-		private readonly ISpendingCategoryService _service;
+    private readonly ISpendingCategoryService _service;
 
-		public MainSpendingCategoriesController(
-			ISpendingCategoryService service)
-		{
-			_service = service;
-		}
+    public MainSpendingCategoriesController(
+        ISpendingCategoryService service)
+    {
+        _service = service;
+    }
 
-		[HttpGet("{categoryId}")]
-		public async Task<IActionResult> GetAsync(string categoryId)
-		{
-			var category = await _service.GetMainAsync(
-				Guid.Parse(categoryId));
+    [HttpGet("{categoryId}")]
+    public async Task<IActionResult> GetAsync(string categoryId)
+    {
+        var category = await _service.GetMainAsync(
+            Guid.Parse(categoryId));
 
-			return Ok(category);
-		}
+        return Ok(category);
+    }
 
-		[HttpGet]
-		public async Task<IActionResult> GetAsync()
-		{
-			var categories =
-				await _service.GetAllMainAsync();
+    [HttpGet]
+    public async Task<IActionResult> GetAsync()
+    {
+        var categories =
+            await _service.GetAllMainAsync();
 
-			return Ok(categories);
-		}
-	}
+        return Ok(categories);
+    }
 }

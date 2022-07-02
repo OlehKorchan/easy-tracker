@@ -1,7 +1,6 @@
-namespace EasyTracker.API.Models
+namespace EasyTracker.API.Models;
+
+public class ResponseModelBase
 {
-	public class ResponseModelBase
-	{
-		public List<string> Errors { get; set; } = new();
-	}
+    public List<string> Errors { get; set; } = new();
 }

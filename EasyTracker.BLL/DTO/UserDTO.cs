@@ -1,9 +1,8 @@
-namespace EasyTracker.BLL.DTO
-{
-	public class UserDTO
-	{
-		public string UserName { get; set; }
+namespace EasyTracker.BLL.DTO;
 
-		public decimal Amount { get; set; }
-	}
+public class UserDTO
+{
+    public string UserName { get; set; }
+
+    public decimal Amount { get; set; }
 }

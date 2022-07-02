@@ -1,9 +1,8 @@
 using EasyTracker.DAL.Enums;
 
-namespace EasyTracker.API.Models
+namespace EasyTracker.API.Models;
+
+public class UserMainCurrencyResponseModel : ResponseModelBase
 {
-	public class UserMainCurrencyResponseModel : ResponseModelBase
-	{
-		public CurrencyCode MainCurrency { get; set; }
-	}
+    public CurrencyCode MainCurrency { get; set; }
 }

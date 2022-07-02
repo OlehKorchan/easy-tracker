@@ -1,7 +1,6 @@
-namespace EasyTracker.API.Models
+namespace EasyTracker.API.Models;
+
+public class UserAmountResponseModel : ResponseModelBase
 {
-	public class UserAmountResponseModel : ResponseModelBase
-	{
-		public decimal Amount { get; set; }
-	}
+    public decimal Amount { get; set; }
 }
