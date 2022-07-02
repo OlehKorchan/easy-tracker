@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Azure.Identity;
 using EasyTracker.BLL.Config;
@@ -150,6 +151,19 @@ builder.Services.Configure<IdentityOptions>(
         options.User.RequireUniqueEmail = false;
     }
 );
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IUser>(services =>
+{
+    var httpContextAccessor = services.GetService<IHttpContextAccessor>();
+
+    var userClaims = httpContextAccessor?.HttpContext?.User;
+
+    return new UserAccessor
+        {
+            UserName = userClaims.FindFirstValue(ClaimTypes.NameIdentifier)
+        };
+});
 
 var app = builder.Build();
 

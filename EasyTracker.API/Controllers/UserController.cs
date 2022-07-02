@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using AutoMapper;
 using EasyTracker.API.Models;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
+using EasyTracker.DAL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,18 +15,19 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
+    private readonly IUser _user;
 
-    public UserController(IUserService userService, IMapper mapper)
+    public UserController(IUserService userService, IMapper mapper, IUser user)
     {
         _userService = userService;
         _mapper = mapper;
+        _user = user;
     }
 
     [HttpGet("amount")]
     public async Task<IActionResult> GetUserAmountAsync()
     {
-        var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var userAmount = await _userService.GetUserAmountAsync(userName);
+        var userAmount = await _userService.GetUserAmountAsync(_user.UserName);
 
         var userResponseModel = new UserAmountResponseModel { Amount = userAmount };
 
@@ -36,9 +37,7 @@ public class UserController : ControllerBase
     [HttpGet("statistics")]
     public async Task<IActionResult> GetUserStatisticsAsync()
     {
-        var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        var userStatistics = await _userService.GetUserStatisticsAsync(userName);
+        var userStatistics = await _userService.GetUserStatisticsAsync(_user.UserName);
         var userResponse = _mapper.Map<UserStatisticsResponseModel>(userStatistics);
 
         return Ok(userResponse);
@@ -46,13 +45,10 @@ public class UserController : ControllerBase
 
     [HttpPut("main-currency")]
     public async Task<IActionResult> PutMainCurrencyAsync(
-        [FromBody] MainCurrencyRequestModel model
-    )
+        [FromBody] MainCurrencyRequestModel model)
     {
-        var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         var modelDto = _mapper.Map<MainCurrencyRequestDTO>(model);
-        modelDto.UserName = userName;
+        modelDto.UserName = _user.UserName;
 
         await _userService.UpdateMainCurrencyAsync(modelDto);
 
@@ -62,12 +58,8 @@ public class UserController : ControllerBase
     [HttpGet("main-currency")]
     public async Task<IActionResult> GetUserMainCurrency()
     {
-        var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userMainCurrencyResponse = await _userService.GetUserMainCurrencyAsync(_user.UserName);
 
-        var userMainCurrencyResponse = await _userService.GetUserMainCurrencyAsync(userName);
-
-        return Ok(
-            new UserMainCurrencyResponseModel { MainCurrency = userMainCurrencyResponse }
-        );
+        return Ok(new UserMainCurrencyResponseModel {MainCurrency = userMainCurrencyResponse});
     }
 }
