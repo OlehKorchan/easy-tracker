@@ -46,7 +46,7 @@ Generated\ Files/
 [Bb]uild[Ll]og.*
 
 #Rider
-/.idea
+.idea/
 # NUnit
 *.VisualState.xml
 TestResult.xml
