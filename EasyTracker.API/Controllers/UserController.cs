@@ -34,6 +34,14 @@ public class UserController : ControllerBase
         return Ok(userResponseModel);
     }
 
+    [HttpPut("amount")]
+    public async Task<IActionResult> PutUserAmountAsync(UserAmountRequestModel request)
+    {
+        await _userService.PutUserAmountAsync(_user.UserName, request.Amount);
+
+        return Ok();
+    }
+
     [HttpGet("statistics")]
     public async Task<IActionResult> GetUserStatisticsAsync()
     {

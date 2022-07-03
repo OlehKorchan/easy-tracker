@@ -56,6 +56,12 @@ public class UserService : IUserService
         return _unitOfWork.UserRepository.GetUserAmountAsync(userName);
     }
 
+    public async Task PutUserAmountAsync(string userName, decimal userAmount)
+    {
+        await _unitOfWork.UserRepository.UpdateAmountAsync(userName, userAmount);
+        _unitOfWork.SaveAsync().GetAwaiter().GetResult();
+    }
+
     public Task<CurrencyCode> GetUserMainCurrencyAsync(string userName)
     {
         return _unitOfWork.UserRepository.GetUserMainCurrencyAsync(userName);
