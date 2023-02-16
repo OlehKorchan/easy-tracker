@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -51,18 +52,33 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
-        options.AddSecurityDefinition(
-            "Bearer",
-            new OpenApiSecurityScheme
+    {
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = HeaderNames.Authorization,
+            Description =
+                "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT"
+        });
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
             {
-                Name = "Authorization",
-                Description =
-                    "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
             }
-        )
+        });
+    }
 );
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -160,9 +176,9 @@ builder.Services.AddTransient<IUser>(services =>
     var userClaims = httpContextAccessor?.HttpContext?.User;
 
     return new UserAccessor
-        {
-            UserName = userClaims.FindFirstValue(ClaimTypes.NameIdentifier)
-        };
+    {
+        UserName = userClaims.FindFirstValue(ClaimTypes.NameIdentifier)
+    };
 });
 
 var app = builder.Build();
@@ -176,11 +192,8 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

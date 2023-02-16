@@ -10,11 +10,13 @@ public class SpendingService : ISpendingService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUser _user;
 
-    public SpendingService(IUnitOfWork unitOfWork, IMapper mapper)
+    public SpendingService(IUnitOfWork unitOfWork, IMapper mapper, IUser user)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _user = user;
     }
 
     public async Task AddAsync(SpendingDTO spendingDto)
@@ -29,6 +31,14 @@ public class SpendingService : ISpendingService
         _unitOfWork.SpendingRepository.Delete(_mapper.Map<Spending>(spendingDto));
 
         return _unitOfWork.SaveAsync();
+    }
+
+    public async Task<List<SpendingDTO>> GetAsync()
+    {
+        var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(_user.UserName);
+        var spendings = await _unitOfWork.SpendingRepository.GetAsync(userId);
+
+        return _mapper.Map<List<SpendingDTO>>(spendings);
     }
 
     public async Task<SpendingDTO> GetAsync(Guid id)

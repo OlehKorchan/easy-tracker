@@ -12,5 +12,5 @@ public class SpendingResponseModel : ResponseModelBase
 
     public CurrencyCode Currency { get; set; }
 
-    public Guid SpendingCategoryId { get; set; }
+    public string CategoryName { get; set; }
 }

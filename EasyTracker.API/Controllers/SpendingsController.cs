@@ -21,6 +21,14 @@ public class SpendingsController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAsync()
+    {
+        var spendings = await _spendingService.GetAsync();
+
+        return Ok(_mapper.Map<List<SpendingResponseModel>>(spendings));
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(string id)
     {
