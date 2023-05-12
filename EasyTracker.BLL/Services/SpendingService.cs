@@ -1,4 +1,5 @@
 using AutoMapper;
+using EasyTracker.API.Models;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Interfaces;
@@ -21,6 +22,7 @@ public class SpendingService : ISpendingService
 
     public async Task AddAsync(SpendingDTO spendingDto)
     {
+        spendingDto.DateOfSpending = DateTime.Now;
         await _unitOfWork.SpendingRepository.AddAsync(_mapper.Map<Spending>(spendingDto));
 
         _unitOfWork.SaveAsync().GetAwaiter().GetResult();
@@ -37,6 +39,17 @@ public class SpendingService : ISpendingService
     {
         var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(_user.UserName);
         var spendings = await _unitOfWork.SpendingRepository.GetAsync(userId);
+
+        return _mapper.Map<List<SpendingDTO>>(spendings);
+    }
+
+    public async Task<List<SpendingDTO>> GetAsync(DateTime startDate, DateTime endDate)
+    {
+        var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(_user.UserName);
+        var spendings = await _unitOfWork.SpendingRepository.GetAsync(
+            userId,
+            startDate,
+            endDate);
 
         return _mapper.Map<List<SpendingDTO>>(spendings);
     }

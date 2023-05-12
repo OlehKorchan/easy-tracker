@@ -13,5 +13,9 @@ public class SpendingDTO
     public CurrencyCode Currency { get; set; }
 
     public Guid SpendingCategoryId { get; set; }
+
+    public DateTime DateOfSpending { get; set; }
+
+
     public SpendingCategoryGetDTO SpendingCategory { get; set; }
 }

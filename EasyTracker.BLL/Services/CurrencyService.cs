@@ -1,82 +1,113 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using EasyTracker.API.Config;
+using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Enums;
 using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 
 namespace EasyTracker.BLL.Services;
 
 public class CurrencyService : ICurrencyService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly RestClient _httpClient;
+    private readonly CurrencyAPISettings _currencyApiSettings;
 
-    public CurrencyService(IUnitOfWork unitOfWork)
+    public CurrencyService(
+        IUnitOfWork unitOfWork,
+        IOptions<CurrencyAPISettings> currencyApiSettings)
     {
         _unitOfWork = unitOfWork;
+        _currencyApiSettings = currencyApiSettings.Value;
+        _httpClient = new RestClient(_currencyApiSettings.BaseAddress);
     }
 
-    public async Task<List<BaseCurrencyRate>> GetAllCurrencyRatesAsync(string userId)
+    public async Task<List<BaseCurrencyRate>> GetAllRatesToCurrencyAsync(
+        string userId,
+        CurrencyCode currency)
     {
-        var rates = await _unitOfWork.CurrencyRateRepository.GetAllUserRatesAsync(userId);
+        var request = new RestRequest(
+            _currencyApiSettings.CurrencyRateUrl +
+            $"?base={currency}&symbols={CurrencyCode.EUR},{CurrencyCode.GBP},{CurrencyCode.UAH},{CurrencyCode.USD}");
+        request.AddHeader("apiKey", _currencyApiSettings.ApiKey);
 
-        var baseRates = await _unitOfWork.BaseCurrencyRateRepository.GetAllRatesAsync();
+        var response = await _httpClient.ExecuteAsync(request);
 
-        return MergeCurrencyRates(baseRates, rates);
-    }
+        if (response.IsSuccessStatusCode)
+        {
+            var rates = JsonSerializer.Deserialize<CurrencyAPIResponse>(
+                response.Content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                });
+            var result = new List<BaseCurrencyRate>
+            {
+                new()
+                {
+                    FromCurrency = CurrencyCode.UAH,
+                    ToCurrency = currency,
+                    Rate = 1 / rates.Rates[CurrencyCode.UAH.ToString()],
+                },
+                new()
+                {
+                    FromCurrency = CurrencyCode.GBP,
+                    ToCurrency = currency,
+                    Rate = 1 / rates.Rates[CurrencyCode.GBP.ToString()],
+                },
+                new()
+                {
+                    FromCurrency = CurrencyCode.USD,
+                    ToCurrency = currency,
+                    Rate = 1 / rates.Rates[CurrencyCode.USD.ToString()],
+                },
+                new()
+                {
+                    FromCurrency = CurrencyCode.EUR,
+                    ToCurrency = currency,
+                    Rate = 1 / rates.Rates[CurrencyCode.EUR.ToString()],
+                },
+            };
 
-    public async Task<List<BaseCurrencyRate>> GetAllRatesFromCurrencyAsync(string userId, CurrencyCode currency)
-    {
-        var rates = await _unitOfWork
-            .CurrencyRateRepository
-            .GetRatesFromCurrencyAsync(userId, currency);
+            return result;
+        }
 
-        var baseRates = await _unitOfWork
-            .BaseCurrencyRateRepository
-            .GetRateFromCurrencyAsync(currency);
-
-        return MergeCurrencyRates(baseRates, rates);
-    }
-
-    public async Task<List<BaseCurrencyRate>> GetAllRatesToCurrencyAsync(string userId, CurrencyCode currency)
-    {
-        var rates = await _unitOfWork
-            .CurrencyRateRepository
-            .GetRatesToCurrencyAsync(userId, currency);
-
-        var baseRates = await _unitOfWork
-            .BaseCurrencyRateRepository
-            .GetRateToCurrencyAsync(currency);
-
-        return MergeCurrencyRates(baseRates, rates);
+        return new List<BaseCurrencyRate>();
     }
 
     public async Task<BaseCurrencyRate> GetCurrencyRateAsync(
-        string userId,
         CurrencyCode fromCurrency,
         CurrencyCode toCurrency)
     {
-        var userRate = await _unitOfWork
-            .CurrencyRateRepository
-            .GetUserRateAsync(userId, fromCurrency, toCurrency);
+        var request = new RestRequest(
+            _currencyApiSettings.CurrencyRateUrl +
+            $"?base={fromCurrency}&symbols={toCurrency}");
+        request.AddHeader("apiKey", _currencyApiSettings.ApiKey);
 
-        return userRate ?? _unitOfWork
-            .BaseCurrencyRateRepository
-            .GetRateAsync(fromCurrency, toCurrency)
-            .GetAwaiter()
-            .GetResult();
-    }
+        var response = await _httpClient.ExecuteAsync(request);
 
-    private static List<BaseCurrencyRate> MergeCurrencyRates(
-        List<BaseCurrencyRate> baseRates,
-        List<CurrencyRate> userRates)
-    {
-        return baseRates.ConvertAll(br =>
+        if (response.IsSuccessStatusCode)
         {
-            var fromUserRates = userRates?.Find(
-                r =>
-                    r.FromCurrency == br.FromCurrency
-                    && r.ToCurrency == br.ToCurrency);
+            var rates = JsonSerializer.Deserialize<CurrencyAPIResponse>(
+                response.Content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                });
 
-            return fromUserRates ?? br;
-        });
+            return new BaseCurrencyRate
+            {
+                FromCurrency = fromCurrency,
+                ToCurrency = toCurrency,
+                Rate = rates.Rates[toCurrency.ToString()],
+            };
+        }
+
+        return null;
     }
 }

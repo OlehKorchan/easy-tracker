@@ -1,4 +1,5 @@
 using EasyTracker.DAL.Models;
+using EasyTracker.DAL.Models.ML;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +8,9 @@ namespace EasyTracker.DAL.Data;
 public class EasyTrackerDbContext : IdentityDbContext<User>
 {
     public EasyTrackerDbContext(DbContextOptions<EasyTrackerDbContext> dbContextOptions)
-        : base(dbContextOptions) { }
+        : base(dbContextOptions)
+    {
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -20,14 +23,19 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
         builder
             .Entity<MainSpendingCategory>()
             .HasData(GetMainSpendingCategories());
+        builder.Entity<MainSpendingCategory>().Property(msc => msc.CategoryName).HasMaxLength(32);
+        builder.Entity<MainSpendingCategory>().Property(msc => msc.Description).HasMaxLength(300);
 
+        builder.Entity<Salary>().Property(s => s.Comment).HasMaxLength(300);
         builder.Entity<Saving>();
         builder.Entity<Spending>();
+        builder.Entity<Spending>().Property(s => s.Comment).HasMaxLength(300);
         builder.Entity<CurrencyRate>();
         builder
             .Entity<BaseCurrencyRate>()
             .HasData(GetBaseCurrencyRates());
 
+        builder.Entity<User>().Property(p => p.UserName).HasMaxLength(256);
         builder
             .Entity<User>()
             .HasMany(u => u.CurrencyBalances)
@@ -38,7 +46,7 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
 
         builder
             .Entity<User>()
-            .HasMany(navigationExpression: u => u.CurrencyRates)
+            .HasMany(u => u.CurrencyRates)
             .WithOne(cr => cr.User)
             .HasForeignKey(cr => cr.UserId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -66,6 +74,8 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Entity<ModelInput>();
+
         base.OnModelCreating(builder);
     }
 
@@ -78,42 +88,42 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
                 Id = Guid.Parse("675301FC-2816-46EB-A0AE-47BB52ED4A19"),
                 FromCurrency = Enums.CurrencyCode.UAH,
                 ToCurrency = Enums.CurrencyCode.UAH,
-                Rate = 1
+                Rate = 1,
             },
             new()
             {
                 Id = Guid.Parse("4BE152C9-8166-490E-A6A8-A760DAEA62CB"),
                 FromCurrency = Enums.CurrencyCode.USD,
                 ToCurrency = Enums.CurrencyCode.USD,
-                Rate = 1
+                Rate = 1,
             },
             new()
             {
                 Id = Guid.Parse("840CF9EE-D0D3-4A65-B133-38B80B4DE011"),
                 FromCurrency = Enums.CurrencyCode.EUR,
                 ToCurrency = Enums.CurrencyCode.EUR,
-                Rate = 1
+                Rate = 1,
             },
             new()
             {
                 Id = Guid.Parse("8E77B222-1D90-4A08-B503-ADE87CB7EAFC"),
                 FromCurrency = Enums.CurrencyCode.GBP,
                 ToCurrency = Enums.CurrencyCode.GBP,
-                Rate = 1
+                Rate = 1,
             },
             new()
             {
                 Id = Guid.Parse("379FAEE5-BDE2-4CB6-8405-2E8E92F163BB"),
                 FromCurrency = Enums.CurrencyCode.UAH,
                 ToCurrency = Enums.CurrencyCode.USD,
-                Rate = 0.034
+                Rate = 0.034,
             },
             new()
             {
                 Id = Guid.Parse("B57128E9-E448-46CD-BFBA-AFEF4D25985C"),
                 FromCurrency = Enums.CurrencyCode.USD,
                 ToCurrency = Enums.CurrencyCode.UAH,
-                Rate = 29.50
+                Rate = 29.50,
             },
             new()
             {
@@ -127,7 +137,7 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
                 Id = Guid.Parse("CB288C3F-F483-4259-8EB7-E6353D2A14CE"),
                 FromCurrency = Enums.CurrencyCode.EUR,
                 ToCurrency = Enums.CurrencyCode.UAH,
-                Rate = 31.59
+                Rate = 31.59,
             },
             new()
             {
@@ -184,7 +194,7 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
                 FromCurrency = Enums.CurrencyCode.GBP,
                 ToCurrency = Enums.CurrencyCode.EUR,
                 Rate = 1.17,
-            }
+            },
         };
     }
 
@@ -196,37 +206,37 @@ public class EasyTrackerDbContext : IdentityDbContext<User>
             {
                 Id = Guid.Parse("EA9208E8-3838-49CE-80AD-468CEA820B86"),
                 CategoryName = "Food",
-                ImageSrc = "fastfood"
+                ImageSrc = "fastfood",
             },
             new()
             {
                 Id = Guid.Parse("BAC73F2D-5456-4B26-A7EB-387852CFEE66"),
                 CategoryName = "Transport",
-                ImageSrc = "train"
+                ImageSrc = "train",
             },
             new()
             {
                 Id = Guid.Parse("E3C2A39D-AC7E-477C-AED1-D6586E6C27D6"),
                 CategoryName = "Health",
-                ImageSrc = "healing"
+                ImageSrc = "healing",
             },
-            new MainSpendingCategory()
+            new()
             {
                 Id = Guid.Parse("0449468F-BC04-4423-97E4-2E56826F5CC1"),
                 CategoryName = "Other",
-                ImageSrc = "info"
+                ImageSrc = "info",
             },
-            new MainSpendingCategory()
+            new()
             {
                 Id = Guid.Parse("A3E814B2-5698-4D4E-BE03-772B295E47CE"),
                 CategoryName = "Restaurants",
-                ImageSrc = "restaurant"
+                ImageSrc = "restaurant",
             },
-            new MainSpendingCategory()
+            new()
             {
                 Id = Guid.Parse("2553D9C5-F104-49A3-80AF-A27EB32FC274"),
                 CategoryName = "Technics",
-                ImageSrc = "android"
+                ImageSrc = "android",
             },
         };
     }

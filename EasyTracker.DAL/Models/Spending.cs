@@ -12,5 +12,7 @@ public class Spending : ModelBase
 
     public Guid SpendingCategoryId { get; set; }
 
+    public DateTime DateOfSpending { get; set; }
+
     public SpendingCategory SpendingCategory { get; set; }
 }

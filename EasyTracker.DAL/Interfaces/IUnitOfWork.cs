@@ -10,6 +10,7 @@ public interface IUnitOfWork
     public ICurrencyRateRepository CurrencyRateRepository { get; }
     public ICurrencyBalanceRepository CurrencyBalanceRepository { get; }
     public IBaseCurrencyRateRepository BaseCurrencyRateRepository { get; }
+    public ICurrencyDataRepository CurrencyDataRepository { get; }
 
     Task SaveAsync();
 }

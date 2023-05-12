@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using Azure.Identity;
+using EasyTracker.API.Config;
 using EasyTracker.BLL.Config;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.BLL.Services;
@@ -18,10 +19,11 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((
-    _,
-    _,
-    configuration) => configuration.WriteTo.Console());
+builder.Host.UseSerilog(
+    (
+        _,
+        _,
+        configuration) => configuration.WriteTo.Console());
 
 if (builder.Environment.IsProduction())
 {
@@ -53,31 +55,34 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
     {
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Name = HeaderNames.Authorization,
-            Description =
-                "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
-            In = ParameterLocation.Header,
-            Type = SecuritySchemeType.Http,
-            Scheme = "Bearer",
-            BearerFormat = "JWT"
-        });
-
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
+        options.AddSecurityDefinition(
+            "Bearer",
+            new OpenApiSecurityScheme
             {
-                new OpenApiSecurityScheme
+                Name = HeaderNames.Authorization,
+                Description =
+                    "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+            });
+
+        options.AddSecurityRequirement(
+            new OpenApiSecurityRequirement
+            {
                 {
-                    Reference = new OpenApiReference
+                    new OpenApiSecurityScheme
                     {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer",
+                        },
+                    },
+                    Array.Empty<string>()
                 },
-                Array.Empty<string>()
-            }
-        });
+            });
     }
 );
 
@@ -90,20 +95,25 @@ builder.Services.AddTransient<IBaseCurrencyRateRepository, BaseCurrencyRateRepos
 builder.Services.AddTransient<ICurrencyRateRepository, CurrencyRateRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IMainSpendingCategoryRepository, MainSpendingCategoryRepository>();
+builder.Services.AddTransient<ICurrencyDataRepository, CurrencyDataRepository>();
 
 builder.Services.AddTransient<ISalaryService, SalaryService>();
 builder.Services.AddTransient<ICurrencyService, CurrencyService>();
 builder.Services.AddTransient<ISpendingService, SpendingService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ISpendingCategoryService, SpendingCategoryService>();
+builder.Services.AddTransient<ICurrencyDataService, CurrencyDataService>();
 builder.Services.AddTransient<IJwtGenerator, JwtGenerator>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.Configure<Settings>(builder.Configuration.GetSection("ConnectionStrings"));
 builder.Services.AddDbContext<EasyTrackerDbContext>(
     options => options.UseSqlServer(connectionString),
     ServiceLifetime.Transient
 );
 
+builder.Services.Configure<CurrencyAPISettings>(
+    builder.Configuration.GetSection(nameof(CurrencyAPISettings)));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(nameof(JwtSettings)));
 
 builder.Services
@@ -140,7 +150,7 @@ builder.Services
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                IssuerSigningKey = key
+                IssuerSigningKey = key,
             };
         }
     );
@@ -169,17 +179,18 @@ builder.Services.Configure<IdentityOptions>(
 );
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<IUser>(services =>
-{
-    var httpContextAccessor = services.GetService<IHttpContextAccessor>();
-
-    var userClaims = httpContextAccessor?.HttpContext?.User;
-
-    return new UserAccessor
+builder.Services.AddTransient<IUser>(
+    services =>
     {
-        UserName = userClaims.FindFirstValue(ClaimTypes.NameIdentifier)
-    };
-});
+        var httpContextAccessor = services.GetService<IHttpContextAccessor>();
+
+        var userClaims = httpContextAccessor?.HttpContext?.User;
+
+        return new UserAccessor
+        {
+            UserName = userClaims.FindFirstValue(ClaimTypes.NameIdentifier),
+        };
+    });
 
 var app = builder.Build();
 

@@ -23,6 +23,18 @@ public class SpendingRepository : ISpendingRepository
             .ToListAsync();
     }
 
+    public Task<List<Spending>> GetAsync(string userId, DateTime startDate, DateTime endDate)
+    {
+        return _spendings
+            .Include(s => s.SpendingCategory)
+            .Where(
+                s => s.SpendingCategory.UserId == userId &&
+                     s.DateOfSpending <= endDate &&
+                     s.DateOfSpending >= startDate)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public async Task<Spending> GetAsync(Guid id)
     {
         return await _spendings.AsNoTracking().FirstOrDefaultAsync(sp => sp.Id == id);

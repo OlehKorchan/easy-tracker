@@ -6,7 +6,12 @@ namespace EasyTracker.BLL.Interfaces;
 public interface IUserService
 {
     Task<UserDTO> GetUserAsync(string userName);
-    Task<UserStatisticsDTO> GetUserStatisticsAsync(string userName);
+
+    Task<UserStatisticsDTO> GetUserStatisticsAsync(
+        string userName,
+        DateTime? startDate,
+        DateTime? endDate);
+
     Task<decimal> GetUserAmountAsync(string userName);
     Task PutUserAmountAsync(string userName, decimal userAmount);
     Task<CurrencyCode> GetUserMainCurrencyAsync(string userName);

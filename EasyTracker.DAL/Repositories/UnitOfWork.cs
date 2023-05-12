@@ -14,6 +14,7 @@ public class UnitOfWork : IUnitOfWork
     private ICurrencyRateRepository _currencyRateRepository;
     private IBaseCurrencyRateRepository _baseCurrencyRateRepository;
     private ICurrencyBalanceRepository _currencyBalanceRepository;
+    private ICurrencyDataRepository _currencyDataRepository;
 
     public UnitOfWork(EasyTrackerDbContext dbContext)
     {
@@ -39,6 +40,9 @@ public class UnitOfWork : IUnitOfWork
 
     public IBaseCurrencyRateRepository BaseCurrencyRateRepository =>
         _baseCurrencyRateRepository ??= new BaseCurrencyRateRepository(_dbContext);
+
+    public ICurrencyDataRepository CurrencyDataRepository =>
+        _currencyDataRepository ??= new CurrencyDataRepository(_dbContext);
 
     public ICurrencyBalanceRepository CurrencyBalanceRepository =>
         _currencyBalanceRepository ??= new CurrencyBalanceRepository(_dbContext);

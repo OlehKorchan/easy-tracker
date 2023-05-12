@@ -12,5 +12,7 @@ public class SpendingResponseModel : ResponseModelBase
 
     public CurrencyCode Currency { get; set; }
 
+    public DateTime DateOfSpending { get; set; }
+
     public string CategoryName { get; set; }
 }

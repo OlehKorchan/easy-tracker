@@ -30,7 +30,7 @@ public class UserService : IUserService
             await _unitOfWork.UserRepository.GetByNameAsync(userName);
 
         return new UserDTO
-            {UserName = currentUser.UserName, Amount = currentUser.Amount};
+            { UserName = currentUser.UserName, Amount = currentUser.Amount };
     }
 
     public async Task AddAmountAsync(decimal amount, string userName)
@@ -67,11 +67,16 @@ public class UserService : IUserService
         return _unitOfWork.UserRepository.GetUserMainCurrencyAsync(userName);
     }
 
-    public async Task<UserStatisticsDTO> GetUserStatisticsAsync(string userName)
+    public async Task<UserStatisticsDTO> GetUserStatisticsAsync(
+        string userName,
+        DateTime? startDate,
+        DateTime? endDate)
     {
         var user =
-            await _unitOfWork.UserRepository.GetWithStatisticsByNameAsync(
-                userName);
+            await _unitOfWork.UserRepository.GetWithStatisticsByNameAndDateAsync(
+                userName,
+                startDate,
+                endDate);
 
         var userStatisticsDTO = _mapper.Map<UserStatisticsDTO>(user);
 
@@ -82,18 +87,19 @@ public class UserService : IUserService
         userStatisticsDTO.SpendingCategories
             .Where(sc => sc.Spendings?.Count > 0)
             .ToList()
-            .ForEach(sc => sc.SpendAmount = CalculateTotalSpend(
-                sc.Spendings,
-                currencyRates));
+            .ForEach(
+                sc => sc.SpendAmount = CalculateTotalSpend(
+                    sc.Spendings,
+                    currencyRates));
 
         return userStatisticsDTO;
     }
 
     private async Task RecalculateUserAmountAsync(
-        User user, CurrencyCode toCurrency)
+        User user,
+        CurrencyCode toCurrency)
     {
         var currencyRate = await _currencyService.GetCurrencyRateAsync(
-            user.Id,
             user.MainCurrency,
             toCurrency);
 

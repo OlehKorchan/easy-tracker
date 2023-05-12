@@ -4,6 +4,7 @@ using EasyTracker.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTracker.DAL.Migrations
 {
     [DbContext(typeof(EasyTrackerDbContext))]
-    partial class EasyTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230417162015_MlIntegration")]
+    partial class MlIntegration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,12 +197,10 @@ namespace EasyTracker.DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CategoryName")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageSrc")
                         .HasColumnType("nvarchar(max)");
@@ -259,8 +259,8 @@ namespace EasyTracker.DAL.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<float>("RateUsdToUah")
-                        .HasColumnType("real");
+                    b.Property<double>("RateUsdToUah")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -277,8 +277,7 @@ namespace EasyTracker.DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Currency")
                         .HasColumnType("int");
@@ -336,14 +335,10 @@ namespace EasyTracker.DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Currency")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("DateOfSpending")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("SpendingCategoryId")
                         .HasColumnType("uniqueidentifier");

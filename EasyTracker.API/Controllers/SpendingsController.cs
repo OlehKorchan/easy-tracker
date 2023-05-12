@@ -22,9 +22,20 @@ public class SpendingsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAsync()
+    public async Task<IActionResult> GetAsync(
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate)
     {
-        var spendings = await _spendingService.GetAsync();
+        IEnumerable<SpendingDTO> spendings;
+
+        if (startDate is not null && endDate is not null)
+        {
+            spendings = await _spendingService.GetAsync(startDate.Value, endDate.Value);
+        }
+        else
+        {
+            spendings = await _spendingService.GetAsync();
+        }
 
         return Ok(_mapper.Map<List<SpendingResponseModel>>(spendings));
     }

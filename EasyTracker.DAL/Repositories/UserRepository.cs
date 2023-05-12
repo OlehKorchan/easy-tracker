@@ -3,6 +3,7 @@ using EasyTracker.DAL.Enums;
 using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Z.EntityFramework.Plus;
 
 namespace EasyTracker.DAL.Repositories;
 
@@ -55,8 +56,27 @@ public class UserRepository : IUserRepository
             .SingleOrDefaultAsync();
     }
 
-    public Task<User> GetWithStatisticsByNameAsync(string userName)
+    public Task<User> GetWithStatisticsByNameAndDateAsync(
+        string userName,
+        DateTime? startDate,
+        DateTime? endDate)
     {
+        if (startDate.HasValue && endDate.HasValue)
+        {
+            return _dbContext.Users
+                .AsNoTracking()
+                .Include(
+                    u => u.Salaries.Where(s => s.DateAdded <= endDate && s.DateAdded >= startDate))
+                .Include(u => u.SpendingCategories)
+                .ThenInclude(
+                    uc => uc.Spendings.Where(
+                        s => s.DateOfSpending <= endDate && s.DateOfSpending >= startDate))
+                .Include(u => u.Savings)
+                .Include(u => u.CurrencyBalances)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(u => u.UserName == userName);
+        }
+
         return _dbContext.Users
             .AsNoTracking()
             .Include(u => u.Salaries)
@@ -64,6 +84,7 @@ public class UserRepository : IUserRepository
             .ThenInclude(uc => uc.Spendings)
             .Include(u => u.Savings)
             .Include(u => u.CurrencyBalances)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(u => u.UserName == userName);
     }
 

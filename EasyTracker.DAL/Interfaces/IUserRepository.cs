@@ -5,7 +5,11 @@ namespace EasyTracker.DAL.Interfaces;
 
 public interface IUserRepository
 {
-    Task<User> GetWithStatisticsByNameAsync(string userName);
+    Task<User> GetWithStatisticsByNameAndDateAsync(
+        string userName,
+        DateTime? startDate,
+        DateTime? endDate);
+
     Task<User> GetByNameAsync(string userName);
     Task<string> GetUserIdByNameAsync(string userName);
     Task<decimal> GetUserAmountAsync(string userName);

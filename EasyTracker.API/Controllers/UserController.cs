@@ -43,9 +43,12 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("statistics")]
-    public async Task<IActionResult> GetUserStatisticsAsync()
+    public async Task<IActionResult> GetUserStatisticsAsync(
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate)
     {
-        var userStatistics = await _userService.GetUserStatisticsAsync(_user.UserName);
+        var userStatistics =
+            await _userService.GetUserStatisticsAsync(_user.UserName, startDate, endDate);
         var userResponse = _mapper.Map<UserStatisticsResponseModel>(userStatistics);
 
         return Ok(userResponse);
@@ -68,6 +71,6 @@ public class UserController : ControllerBase
     {
         var userMainCurrencyResponse = await _userService.GetUserMainCurrencyAsync(_user.UserName);
 
-        return Ok(new UserMainCurrencyResponseModel {MainCurrency = userMainCurrencyResponse});
+        return Ok(new UserMainCurrencyResponseModel { MainCurrency = userMainCurrencyResponse });
     }
 }

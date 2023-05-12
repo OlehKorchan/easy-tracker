@@ -21,7 +21,7 @@ public class SalaryService : ISalaryService
     {
         var salary = _mapper.Map<Salary>(salaryDto);
         salary.UserId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(salaryDto.UserName);
-        salary.DateAdded = DateTime.UtcNow;
+        salary.DateAdded = DateTime.Now;
 
         await _unitOfWork.SalaryRepository.AddAsync(salary);
 
@@ -34,7 +34,7 @@ public class SalaryService : ISalaryService
 
         var userId = await _unitOfWork.UserRepository.GetUserIdByNameAsync(salary.UserName);
 
-        if (!string.Equals(userId, salaryToDelete.UserId, comparisonType: StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(userId, salaryToDelete.UserId, StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException();
         }
