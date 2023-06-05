@@ -23,7 +23,11 @@ builder.Host.UseSerilog(
     (
         _,
         _,
-        configuration) => configuration.WriteTo.Console());
+        configuration) =>
+    {
+        configuration.WriteTo.Console();
+        configuration.WriteTo.Seq("https://teamcubing-logs.azurewebsites.net/");
+    });
 
 // if (builder.Environment.IsProduction())
 // {
