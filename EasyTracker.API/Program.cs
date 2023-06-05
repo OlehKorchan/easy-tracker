@@ -25,13 +25,13 @@ builder.Host.UseSerilog(
         _,
         configuration) => configuration.WriteTo.Console());
 
-if (builder.Environment.IsProduction())
-{
-    builder.Configuration.AddAzureKeyVault(
-        new Uri("https://easy-tracker.vault.azure.net/"),
-        new DefaultAzureCredential()
-    );
-}
+// if (builder.Environment.IsProduction())
+// {
+//     builder.Configuration.AddAzureKeyVault(
+//         new Uri("https://easy-tracker.vault.azure.net/"),
+//         new DefaultAzureCredential()
+//     );
+// }
 
 builder.Services.AddCors(
     options =>
