@@ -43,9 +43,6 @@
 
   <ItemGroup>
     <Content Remove="stylecop.json" />
-    <Content Include="..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

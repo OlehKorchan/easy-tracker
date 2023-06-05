@@ -1,28 +1,21 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using EasyTracker.API.Config;
 using EasyTracker.BLL.DTO;
 using EasyTracker.BLL.Interfaces;
 using EasyTracker.DAL.Enums;
-using EasyTracker.DAL.Interfaces;
 using EasyTracker.DAL.Models;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 
 namespace EasyTracker.BLL.Services;
 
 public class CurrencyService : ICurrencyService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly RestClient _httpClient;
     private readonly CurrencyAPISettings _currencyApiSettings;
 
-    public CurrencyService(
-        IUnitOfWork unitOfWork,
-        IOptions<CurrencyAPISettings> currencyApiSettings)
+    public CurrencyService(IOptions<CurrencyAPISettings> currencyApiSettings)
     {
-        _unitOfWork = unitOfWork;
         _currencyApiSettings = currencyApiSettings.Value;
         _httpClient = new RestClient(_currencyApiSettings.BaseAddress);
     }
